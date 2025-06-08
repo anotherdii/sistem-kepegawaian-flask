@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, session
+from flask import Flask, render_template, request, redirect, flash, session, url_for
 from flaskext.mysql import MySQL
 app = Flask(__name__)
 app.secret_key = 'rahasia'
@@ -16,14 +16,23 @@ def login():
         username = request.form['username']
         password = request.form['password']
         cursor = db.get_db().cursor()
-        cursor.execute("SELECT * FROM user where username=%s and password=%s",(username,password))
+        cursor.execute("SELECT id, username, password, hak_akses FROM user WHERE username=%s and password=%s",(username,password))
         data = cursor.fetchone()
         if data:
-            session['user']=username
-            return redirect('/admin/home')
+           
+            session['loggedin'] = True
+            session['id'] = data[0]
+            session['username'] = data[1]    
+            session['hak_akses'] = data[3]
+
+        
+            if session['hak_akses'] == 'admin':
+                return redirect(url_for('home')) 
+            else:
+                return redirect(url_for('user')) 
         else:
-            flash('Email atau password salah!', 'danger')
-            return redirect('/login')
+            flash('Username atau password salah!', 'danger')
+            return redirect(url_for('login'))
 
     return render_template('login.html')
 
@@ -64,9 +73,10 @@ def kontak():
 
 @app.route('/admin/home')
 def home():
-    if 'user' not in session:
+    if 'loggedin' not in session or session['hak_akses'] != 'admin':
         return redirect('/login')
     return render_template('admin/index.html')
+    
 
 @app.route('/admin/admin-kelola-barang')
 def kelolabarang():
@@ -192,11 +202,12 @@ def formuser():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hak_akses= request.form['hak_akses']
        
         try:
             cursor = db.get_db().cursor()
-            sql = "INSERT INTO user (username, password) VALUES (%s, %s)"
-            val = (username, password)
+            sql = "INSERT INTO user (username, password, hak_akses) VALUES (%s, %s, %s)"
+            val = (username, password, hak_akses)
             print(val)
             cursor.execute(sql, val)
             db.get_db().commit()
@@ -213,15 +224,16 @@ def formedituser(id):
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        hak_akses= request.form['hak_akses']
        
         try:
             cursor = db.get_db().cursor()
             sql = """
                 UPDATE user
-                SET username=%s, password=%s
+                SET username=%s, password=%s, hak_akses=%s
                 WHERE id=%s
             """
-            val = (username, password,id)
+            val = (username, password,id, hak_akses)
             print(val)
             cursor.execute(sql, val)
             db.get_db().commit()
@@ -241,6 +253,10 @@ def formedituser(id):
         return redirect('/admin/admin-kelola-user')
     return render_template('admin/formedituser.html', user=data)
 
+
+@app.route('/user/dashboard')
+def user():
+    return render_template('user/pegawai.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

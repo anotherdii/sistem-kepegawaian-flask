@@ -13,6 +13,8 @@
           <th>ID</th>
           <th>Username</th>
           <th>Password</th>
+           <th>Hak Akses</th>
+
           
           <th>Aksi</th>
         </tr>
@@ -24,6 +26,7 @@
           <td>{{loop.index}}</td>
           <td>{{isi[1]}}</td>
           <td>{{isi[2]}}</td>
+          <td>{{isi[3]}}</td>
           
           <td>
             <a href="/admin/form-edit-user/{{isi[0]}}" class="btn btn-sm btn-warning">Edit</a>
