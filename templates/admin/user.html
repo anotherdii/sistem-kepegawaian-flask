@@ -1,0 +1,44 @@
+{%extends 'admin/layout.html'%}
+{%block content%}
+<div class="container">
+    <h2 class="mb-4">Data User</h2>
+    
+    <!-- Tombol Tambah -->
+    <a class="btn btn-primary mb-3" href="/admin/form-tambah-user">+ Tambah User</a>
+  
+    <!-- Tabel -->
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Password</th>
+          
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+       
+        {% for isi in hasil %}
+        <tr>
+          <td>{{loop.index}}</td>
+          <td>{{isi[1]}}</td>
+          <td>{{isi[2]}}</td>
+          
+          <td>
+            <a href="/admin/form-edit-user/{{isi[0]}}" class="btn btn-sm btn-warning">Edit</a>
+            <form action="/admin/hapus-barang/{{isi[0]}}" method="POST" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus barang ini?');">
+                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+            </form>
+          </td>
+        </tr>
+        
+        {%endfor%}
+        
+        
+      </tbody>
+    </table>
+  </div>
+{%endblock%}
+
+

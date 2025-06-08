@@ -1,0 +1,18 @@
+{%extends 'admin/layout.html'%}
+{%block content%}
+<div class="container ">
+    <h3 class="mb-4">Edit User</h3>
+    <form action="/admin/form-edit-user/{{user[0]}}" method="POST">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" name="username" value="{{user[1]}}" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">password</label>
+        <input type="text" class="form-control" id="password" name="password" value="{{user[2]}}" required>
+      </div>
+           <button type="submit" class="btn btn-primary">Simpan</button>
+    </form>
+  </div>
+  
+{%endblock%}

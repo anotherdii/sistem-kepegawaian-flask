@@ -1,0 +1,40 @@
+{%extends 'admin/layout.html'%}
+{%block content%}
+<div class="container ">
+    <h3 class="mb-4">Edit Pegawai</h3>
+    <form action="/admin/form-edit-barang/{{barang[0]}}" method="POST">
+      <div class="mb-3">
+        <label for="nama" class="form-label">Nama Pegawai</label>
+        <input type="text" class="form-control" id="nama" name="nama" value="{{barang[1]}}" required>
+      </div>
+      <div class="mb-3">
+        <label for="harga" class="form-label">NIP</label>
+        <input type="number" class="form-control" id="nip" name="nip" value="{{barang[2]}}" required>
+      </div>
+      <div class="mb-3">
+        <label for="stok" class="form-label">Jabatan</label>
+        <input type="number" class="form-control" id="jabatan" name="jabatan" value="{{barang[3]}}" required>
+      </div>
+      <div class="mb-3">
+        <label for="kategori" class="form-label">Unit Kerja</label>
+        <select class="form-select" id="unit_kerja" name="unit_kerja" required>
+          <option value="{{barang[4]}}">{{barang[4]}}</option>
+          <option value="Keuangan">Keuangan</option>
+          <option value="Pemasaran">Pemasaran</option>
+          <option value=" SDM">SDM</option>
+          <option value="Logistik "> Logistik</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="deskripsi" class="form-label">Deskripsi</label>
+        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3">
+          {{barang[5]}}
+
+        </textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Simpan</button>
+    </form>
+  </div>
+  
+{%endblock%}
