@@ -1,27 +1,151 @@
 {%extends 'user/layout.html'%}
 
 {%block isi%}
-<div class="container mt-5">
-    <h2>Data Table</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Age</th>
-                <th scope="col">Email</th>
-            </tr>
-        </thead>
-        <tbody>
-          
-            <tr>
-                <th scope="row">1</th>
-                <td>Ahmad</td>
-                <td>28</td>
-                <td>30</td>
-            </tr>
-           
-        </tbody>
-    </table>
-</div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Aplikasi SIKepegawaian</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Gaya khusus untuk halaman tentang (bisa juga dimasukkan ke style.css) */
+        body {
+            background-color: #f8f9fa; /* Latar belakang abu-abu terang */
+            color: #343a40;
+            font-family: 'Poppins', sans-serif; /* Pastikan Anda sudah link font Poppins di head jika menggunakan ini */
+        }
+        .about-section {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .about-section h2 {
+            color: #6F42C1; /* Warna ungu primer Anda */
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+        .about-section h5 {
+            color: #6F42C1; /* Warna ungu primer Anda */
+            font-weight: 600;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .about-section p, .about-section ul {
+            line-height: 1.7;
+            font-size: 1.05rem;
+            color: #495057;
+        }
+        .about-section ul {
+            padding-left: 25px;
+        }
+        .about-section ul li {
+            margin-bottom: 8px;
+        }
+        .contact-info a {
+            color: #6F42C1;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+        .footer-info {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 40px;
+            border-top: 1px solid #e9ecef;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-md-12">
+                <div class="about-section text-center">
+                    <h1 class="mb-4">Tentang Aplikasi SIKepegawaian</h1>
+                    <p class="lead">
+                        Selamat datang di Sistem Informasi Kepegawaian (SIKepegawaian) kami! Aplikasi ini dirancang khusus untuk mempermudah pengelolaan data dan administrasi sumber daya manusia di [Nama Organisasi/Perusahaan Anda].
+                    </p>
+                </div>
+
+                <div class="about-section">
+                    <h2>Apa itu Aplikasi SIKepegawaian?</h2>
+                    <p>
+                        Aplikasi SIKepegawaian adalah sebuah platform digital yang mengintegrasikan seluruh data dan proses terkait pegawai, mulai dari informasi pribadi, riwayat pekerjaan, absensi, hingga penggajian. Tujuan utama kami adalah menyediakan solusi komprehensif untuk manajemen kepegawaian yang efisien dan akurat.
+                    </p>
+
+                    <h5>Tujuan Utama:</h5>
+                    <ul>
+                        <li>Meningkatkan efisiensi dan akurasi dalam pengelolaan data kepegawaian.</li>
+                        <li>Meminimalkan pekerjaan manual dan birokrasi yang memakan waktu.</li>
+                        <li>Menyediakan akses informasi kepegawaian yang cepat dan relevan bagi pihak yang berwenang dan pegawai.</li>
+                        <li>Mendukung pengambilan keputusan strategis terkait SDM berdasarkan data yang valid.</li>
+                    </ul>
+
+                    <h5>Manfaat bagi Pengguna:</h5>
+                    <ul>
+                        <li><strong>Bagi Administrasi/HRD:</strong> Memudahkan rekapitulasi data, pengelolaan absensi, perhitungan gaji, pengajuan cuti, dan pembuatan laporan kepegawaian secara terpusat.</li>
+                        <li><strong>Bagi Pegawai:</strong> Memungkinkan akses mandiri ke informasi pribadi, riwayat pekerjaan, slip gaji, sisa cuti, dan pengumuman internal kapan saja dan di mana saja.</li>
+                        <li><strong>Bagi Manajemen:</strong> Memberikan gambaran komprehensif tentang performa karyawan, tren absensi, dan data demografi untuk perencanaan SDM yang lebih baik dan strategis.</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h2>Fitur Utama</h2>
+                    <p>Aplikasi SIKepegawaian kami dilengkapi dengan berbagai fitur unggulan untuk memenuhi kebutuhan manajemen SDM Anda:</p>
+                    <ul>
+                        <li><i class="fas fa-user-tie me-2"></i> <strong>Manajemen Data Pegawai:</strong> Database lengkap untuk menyimpan informasi pribadi, kontak darurat, kualifikasi pendidikan, riwayat pekerjaan, dan posisi jabatan.</li>
+                        <li><i class="fas fa-calendar-check me-2"></i> <strong>Pengelolaan Absensi:</strong> Pencatatan absensi harian, cuti, izin, dan sakit, serta fitur rekapitulasi absensi bulanan/tahunan.</li>
+                        <li><i class="fas fa-wallet me-2"></i> <strong>Penggajian (Payroll):</strong> Perhitungan gaji pokok, tunjangan, potongan, dan pembuatan slip gaji digital.</li>
+                        <li><i class="fas fa-plane-departure me-2"></i> <strong>Manajemen Cuti dan Izin:</strong> Pengajuan dan persetujuan cuti/izin secara online.</li>
+                        <li><i class="fas fa-chart-line me-2"></i> <strong>Riwayat Kinerja & Pelatihan:</strong> Pencatatan penilaian kinerja, riwayat pelatihan, dan sertifikasi pegawai.</li>
+                        <li><i class="fas fa-file-alt me-2"></i> <strong>Laporan & Analisis:</strong> Generasi laporan kepegawaian (misal: daftar pegawai, laporan absensi, rekap gaji) dan dashboard analitik interaktif.</li>
+                        <li><i class="fas fa-bullhorn me-2"></i> <strong>Pengumuman Internal:</strong> Fitur untuk menyampaikan informasi atau pengumuman penting kepada seluruh pegawai atau grup tertentu.</li>
+                        <li><i class="fas fa-id-card me-2"></i> <strong>Akses Mandiri Pegawai (Self-Service):</strong> Pegawai dapat mengakses dan memperbarui data profil mereka sendiri, melihat slip gaji, dan mengajukan cuti.</li>
+                    </ul>
+                </div>
+
+                <div class="about-section text-center">
+                    <h2>Tentang Kami</h2>
+                    <p>
+                        Aplikasi SIKepegawaian ini dikembangkan dengan sepenuh hati oleh tim [Nama Tim/Individu Pengembang Anda]. Kami berdedikasi untuk menciptakan solusi teknologi yang inovatif, mudah digunakan, dan relevan, guna membantu organisasi Anda mencapai efisiensi operasional dan kualitas manajemen sumber daya manusia yang lebih tinggi.
+                    </p>
+                    <p>
+                        Visi kami adalah menjadi mitra terpercaya dalam transformasi digital pengelolaan kepegawaian.
+                    </p>
+                </div>
+
+                <div class="about-section text-center contact-info">
+                    <h2>Kontak & Dukungan</h2>
+                    <p>
+                        Jika Anda memiliki pertanyaan, saran, atau memerlukan bantuan teknis, jangan ragu untuk menghubungi kami. Kami siap membantu!
+                    </p>
+                    <p>
+                        <i class="fas fa-envelope me-2"></i> Email: <a href="mailto:[Alamat Email Dukungan Anda]">[Alamat Email Dukungan Anda]</a><br>
+                        <i class="fas fa-phone me-2"></i> Telepon: <a href="tel:[Nomor Telepon Dukungan Anda (opsional)]">[Nomor Telepon Dukungan Anda (opsional)]</a><br>
+                        <i class="fas fa-globe me-2"></i> Situs Web: <a href="[Link ke halaman dukungan/kontak Anda (opsional)]" target="_blank">[Link ke halaman dukungan/kontak Anda (opsional)]</a>
+                    </p>
+                </div>
+
+                <div class="text-center footer-info">
+                    <p>Versi Aplikasi: <strong>[Misal: 1.0.0 Stable]</strong></p>
+                    <p>Tanggal Rilis Terakhir: <strong>[Misal: 8 Juni 2025]</strong></p>
+                    <p>&copy; 2025 [Nama Organisasi/Individu Anda]. Semua hak dilindungi undang-undang.</p>
+                    <p>[Tambahkan informasi lisensi jika aplikasi Anda memiliki lisensi spesifik, misal: "Lisensi: Proprietary Software"]</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 {%endblock%}

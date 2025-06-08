@@ -1,47 +1,40 @@
 {% extends 'admin/layout.html' %}
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">Dashboard</h2>
+<div class="container py-4">
+  <h2 class="mb-4 fw-bold">Dashboard</h2>
+  <div class="row g-4">
 
-    <div class="row">
-        <!-- Card 1 -->
-        <div class="col-md-4 mb-4">
-            <div class="card text-white bg-primary h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Users</h5>
-                    <p class="card-text">Jumlah pengguna aktif hari ini: <strong>123</strong></p>
-                </div>
-                <div class="card-footer bg-transparent border-top-0">
-                    <small>Last updated: 1 hour ago</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 2 -->
-        <div class="col-md-4 mb-4">
-            <div class="card text-white bg-success h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Sales</h5>
-                    <p class="card-text">Total penjualan hari ini: <strong>Rp 2.500.000</strong></p>
-                </div>
-                <div class="card-footer bg-transparent border-top-0">
-                    <small>Last updated: 1 hour ago</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="col-md-4 mb-4">
-            <div class="card text-white bg-warning h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Notifications</h5>
-                    <p class="card-text">Pesan baru masuk: <strong>8</strong></p>
-                </div>
-                <div class="card-footer bg-transparent border-top-0">
-                    <small>Last updated: 1 hour ago</small>
-                </div>
-            </div>
-        </div>
+    <div class="col-md-4">
+      <div class="p-4 bg-white rounded shadow-sm h-100">
+        <h5 class="fw-bold mb-2">
+          <i class="bi bi-people text-primary me-2"></i>Users
+        </h5>
+        <p class="mb-1">Jumlah pengguna aktif hari ini: <span class="fw-semibold">123</span></p>
+        <small class="text-muted">Last updated: 1 hour ago</small>
+      </div>
     </div>
+
+    <div class="col-md-4">
+      <div class="p-4 bg-white rounded shadow-sm h-100">
+        <h5 class="fw-bold mb-2">
+          <i class="bi bi-cash-coin text-success me-2"></i>Sales
+        </h5>
+        <p class="mb-1">Total penjualan hari ini: <span class="fw-semibold text-success">Rp 2.500.000</span></p>
+        <small class="text-muted">Last updated: 1 hour ago</small>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="p-4 bg-white rounded shadow-sm h-100">
+        <h5 class="fw-bold mb-2">
+          <i class="bi bi-bell text-warning me-2"></i>Notifications
+        </h5>
+        <p class="mb-1">Pesan baru masuk: <span class="fw-semibold">8</span></p>
+        <small class="text-muted">Last updated: 1 hour ago</small>
+      </div>
+    </div>
+
+  </div>
 </div>
+
 {% endblock %}
