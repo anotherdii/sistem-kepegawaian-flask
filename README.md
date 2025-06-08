@@ -1,4 +1,4 @@
-# Seri belajar bersama mahasiswa di waktu senggang
+# Sistem Kepegawaian
 ## Requirements
 - flask: `pip install flask` atau `python -m pip install flask`
 * silahkan ganti setiap kata `python` dengan `py` apabila menggunakan python versi >= 3.9
