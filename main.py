@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash, session, url_for
 from flaskext.mysql import MySQL
+import pymysql
 app = Flask(__name__)
 app.secret_key = 'rahasia'
 db=MySQL(host="localhost", user="root", passwd="", db="dbtokoa")
@@ -9,29 +10,46 @@ db.init_app(app)
 def index():
     return render_template('user/index.html')
 
+def dbuser():
+    return pymysql.connect(
+        host='localhost',
+        user='root',
+        password='',
+        database='dbtokoa',
+        cursorclass=pymysql.cursors.DictCursor)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        cursor = db.get_db().cursor()
-        cursor.execute("SELECT id, username, password, hak_akses FROM user WHERE username=%s and password=%s",(username,password))
-        data = cursor.fetchone()
-        if data:
-           
-            session['loggedin'] = True
-            session['id'] = data[0]
-            session['username'] = data[1]    
-            session['hak_akses'] = data[3]
 
-        
-            if session['hak_akses'] == 'admin':
-                return redirect(url_for('home')) 
+        try:
+            cursor = db.get_db().cursor()
+            cursor.execute("SELECT id, username, password, hak_akses FROM user WHERE username=%s AND password=%s", (username, password))
+            user = cursor.fetchone()
+
+            if user:
+                session['loggedin'] = True
+                session['id'] = user[0]            # id
+                session['username'] = user[1]      # username
+                session['hak_akses'] = user[3]     # hak_akses
+
+                if session['hak_akses'] == 'admin':
+                    return redirect(url_for('home'))
+                elif session['hak_akses'] == 'user':
+                    return redirect(url_for('user_dashboard'))  # gunakan nama fungsi dashboard
+
+                else:
+                    flash("Hak akses tidak dikenal", "warning")
+                    return redirect(url_for('login'))
+
             else:
-                return redirect(url_for('user')) 
-        else:
-            flash('Username atau password salah!', 'danger')
+                flash('Username atau password salah!', 'danger')
+                return redirect(url_for('login'))
+
+        except Exception as e:
+            flash(f'Terjadi kesalahan: {e}', 'danger')
             return redirect(url_for('login'))
 
     return render_template('login.html')
@@ -97,11 +115,11 @@ def formbarang():
         nip = request.form['nip']
         jabatan = request.form['jabatan']
         unit_kerja = request.form['unit_kerja']
-        deskripsi = request.form['deskripsi']
+        alamat = request.form['alamat']
         try:
             cursor = db.get_db().cursor()
-            sql = "INSERT INTO barang (nama, nip, jabatan, unit_kerja, deskripsi) VALUES (%s, %s, %s, %s, %s)"
-            val = (nama, nip, jabatan, unit_kerja, deskripsi)
+            sql = "INSERT INTO barang (nama, nip, jabatan, unit_kerja, alamat) VALUES (%s, %s, %s, %s, %s)"
+            val = (nama, nip, jabatan, unit_kerja, alamat)
             print(val)
             cursor.execute(sql, val)
             db.get_db().commit()
@@ -121,15 +139,15 @@ def formeditbarang(id):
         nip = request.form['nip']
         jabatan = request.form['jabatan']
         unit_kerja = request.form['unit_kerja']
-        deskripsi = request.form['deskripsi']
+        alamat = request.form['alamat']
         try:
             cursor = db.get_db().cursor()
             sql = """
                 UPDATE barang
-                SET nama=%s, nip=%s, jabatan=%s, unit_kerja=%s, deskripsi=%s
+                SET nama=%s, nip=%s, jabatan=%s, unit_kerja=%s, alamat=%s
                 WHERE id=%s
             """
-            val = (nama, nip, jabatan, unit_kerja, deskripsi,id)
+            val = (nama, nip, jabatan, unit_kerja, alamat,id)
             print(val)
             cursor.execute(sql, val)
             db.get_db().commit()
@@ -156,13 +174,25 @@ def hapus_barang(id):
         cursor = db.get_db().cursor()
         cursor.execute("DELETE FROM barang WHERE id = %s", (id,))
         db.get_db().commit()
-        flash("Barang berhasil dihapus.", "success")
+        flash("Pegawai berhasil dihapus.", "success")
     except Exception as e:
-        flash(f"Gagal menghapus barang: {e}", "danger")
+        flash(f"Gagal menghapus pegawai: {e}", "danger")
    
 
     return redirect('/admin/admin-kelola-barang')
 
+@app.route('/admin/hapus-user/<int:id>', methods=['POST'])
+def hapus_user(id):
+    try:
+        cursor = db.get_db().cursor()
+        cursor.execute("DELETE FROM user WHERE id = %s", (id,))
+        db.get_db().commit()
+        flash("User berhasil dihapus.", "success")
+    except Exception as e:
+        flash(f"Gagal menghapus user: {e}", "danger")
+   
+
+    return redirect('/admin/admin-kelola-user')
 
 @app.route('/logout')
 def logout():
@@ -253,10 +283,38 @@ def formedituser(id):
         return redirect('/admin/admin-kelola-user')
     return render_template('admin/formedituser.html', user=data)
 
-
 @app.route('/user/dashboard')
-def user():
-    return render_template('user/pegawai.html')
+def user_dashboard():
+    if 'hak_akses' not in session or session['hak_akses'] != 'user':
+        flash("Anda tidak memiliki izin mengakses halaman ini", "danger")
+        return redirect(url_for('login'))
+
+    data = None
+    try:
+        user_id = session.get('id')
+        connection = dbuser()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM barang WHERE id = %s", (user_id,))
+            data = cursor.fetchone()
+        connection.close()
+    except Exception as e:
+        flash(f"Gagal mengambil data: {e}", "danger")
+
+    return render_template('user/pegawai.html', barang=data)
+
+@app.route('/user/profil')
+def profil():
+    return render_template('user/profil.html')
+@app.route('/user/ds')
+def ds():
+    return render_template('user/dashboard.html')
+@app.route('/user/setting')
+def setting():
+    return render_template('user/setting.html')
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

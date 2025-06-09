@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --purple: #6f42c1;
+      --neutral-gray: #6b7280;
+      --white: #ffffff;
+      --card-shadow: rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--white);
+      color: var(--neutral-gray);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Sticky nav */
+    nav {
+      position: sticky;
+      top: 0;
+      background: var(--white);
+      border-bottom: 1px solid #eaeaea;
+      z-index: 100;
+      box-shadow: 0px 2px 8px var(--card-shadow);
+    }
+    .container-lg {
+      max-width: 1200px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--purple);
+      letter-spacing: 0.05em;
+    }
+    .nav-link {
+      color: var(--neutral-gray);
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+    .nav-link:hover, .nav-link:focus {
+      color: var(--purple);
+      text-decoration: none;
+    }
+    /* Hero Section */
+    header.hero-section {
+      flex-shrink: 0;
+      background: #f8f6fc;
+      padding: 4rem 1rem 5rem;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    header.hero-section h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+    header.hero-section p {
+      font-size: 1.25rem;
+      color: var(--neutral-gray);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.5;
+    }
+    header.hero-section .btn-primary {
+      background-color: var(--purple);
+      border-color: var(--purple);
+      font-weight: 600;
+      font-size: 1.125rem;
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+      box-shadow: 0 6px 12px rgb(111 66 193 / 0.3);
+    }
+    header.hero-section .btn-primary:hover,
+    header.hero-section .btn-primary:focus {
+      background-color: #4e2a8e;
+      border-color: #4e2a8e;
+      box-shadow: 0 8px 20px rgb(78 42 142 / 0.4);
+      text-decoration: none;
+    }
+
+    main.container-lg {
+      flex-grow: 1;
+      padding-bottom: 3rem;
+    }
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .card {
+      background: var(--white);
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 12px var(--card-shadow);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 12px 24px rgba(111,66,193,0.25);
+    }
+    .card h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--purple);
+      margin-bottom: 0.75rem;
+    }
+    .card p {
+      font-size: 1rem;
+      color: var(--neutral-gray);
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+    .metric {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--purple);
+      margin-top: 1rem;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg py-3">
+    <div class="container-lg d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="/">Sistem Kepegawaian</a>
+      <div class="d-flex gap-3 align-items-center">
+        <a class="nav-link" href="/user/profil">Profile</a>
+        <a class="nav-link active" href="/logout">Log out</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero-section">
+    <h1>Welcome Back, Adinda!</h1>
+    <p>Manage your projects, monitor stats, and explore insights all in one place.</p>
+    <a href="/user/dashboard" class="btn btn-primary">Kembali</a>
+  </header>
+
+  <main class="container-lg">
+    <section class="cards-grid" aria-label="Dashboard metrics and features">
+      
+      <article class="card" tabindex="0">
+        <h2>Projects</h2>
+        <p>Keep track of your ongoing and completed projects with ease.</p>
+        <div class="metric" aria-label="Number of projects">12</div>
+      </article>
+
+      <article class="card" tabindex="0">
+        <h2>Tasks</h2>
+        <p>Stay on top of your daily tasks and to-dos.</p>
+        <div class="metric" aria-label="Number of tasks">54</div>
+      </article>
+
+      <article class="card" tabindex="0">
+        <h2>Messages</h2>
+        <p>Check your latest messages and stay connected.</p>
+        <div class="metric" aria-label="Number of unread messages">4</div>
+      </article>
+
+      <article class="card" tabindex="0">
+        <h2>Notifications</h2>
+        <p>Never miss an update with your personalized notifications.</p>
+        <div class="metric" aria-label="Number of notifications">7</div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+    """)
+
+
