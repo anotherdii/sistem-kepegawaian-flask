@@ -263,7 +263,7 @@ def formedituser(id):
                 SET username=%s, password=%s, hak_akses=%s
                 WHERE id=%s
             """
-            val = (username, password,id, hak_akses)
+            val = (username, password, hak_akses, id)
             print(val)
             cursor.execute(sql, val)
             db.get_db().commit()
