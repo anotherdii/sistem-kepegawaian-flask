@@ -1,40 +1,112 @@
-{% extends 'admin/layout.html' %}
+{# templates/admin_dashboard.html #}
+
+{% extends 'admin/layout.html' %} {# Pastikan ini sesuai dengan lokasi layout admin kamu #}
+
 {% block content %}
-<div class="container py-4">
-  <h2 class="mb-4 fw-bold">Dashboard</h2>
-  <div class="row g-4">
-
-    <div class="col-md-4">
-      <div class="p-4 bg-white rounded shadow-sm h-100">
-        <h5 class="fw-bold mb-2">
-          <i class="bi bi-people text-primary me-2"></i>Users
-        </h5>
-        <p class="mb-1">Jumlah pengguna aktif hari ini: <span class="fw-semibold">123</span></p>
-        <small class="text-muted">Last updated: 1 hour ago</small>
-      </div>
+    {# Header Dashboard yang Lebih Menonjol #}
+    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-lg shadow-xl mb-10 text-purple text-center">
+        <h1 class="text-4xl font-extrabold mb-3">Dashboard Admin</h1>
+        <p class="text-xl font-light opacity-90">Sistem Kepegawaian</p>
+        <p class="mt-4 text-base opacity-80">Selamat datang, Admin! Dapatkan ringkasan dan akses cepat ke data penting Anda.</p>
     </div>
 
-    <div class="col-md-4">
-      <div class="p-4 bg-white rounded shadow-sm h-100">
-        <h5 class="fw-bold mb-2">
-          <i class="bi bi-cash-coin text-success me-2"></i>Sales
-        </h5>
-        <p class="mb-1">Total penjualan hari ini: <span class="fw-semibold text-success">Rp 2.500.000</span></p>
-        <small class="text-muted">Last updated: 1 hour ago</small>
-      </div>
-    </div>
+    {# Flash messages akan ditampilkan di admin/layout.html #}
 
-    <div class="col-md-4">
-      <div class="p-4 bg-white rounded shadow-sm h-100">
-        <h5 class="fw-bold mb-2">
-          <i class="bi bi-bell text-warning me-2"></i>Notifications
-        </h5>
-        <p class="mb-1">Pesan baru masuk: <span class="fw-semibold">8</span></p>
-        <small class="text-muted">Last updated: 1 hour ago</small>
-      </div>
-    </div>
+    {# === START: Tambahkan div wrapper untuk konten utama dashboard di sini === #}
+    {# Kelas pt-XX akan memberikan padding atas. Sesuaikan angkanya (misal: pt-16, pt-20, pt-24) #}
+    {# berdasarkan tinggi navbar/header di layout.html kamu. #}
+    <div class="container mx-auto px-4 py-8"> {# mx-auto untuk center, px-4 untuk padding samping #}
+        {# Bagian Ringkasan Statistik dengan Ikon dan Efek Hover #}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            {# Card Total Laporan #}
+            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center justify-center text-center transition-transform transform hover:scale-105 duration-300 cursor-pointer border-t-4 border-indigo-500">
+                <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 mb-4">
+                    <i class="fas fa-chart-bar fa-2x"></i>
+                </div>
+                <div class="text-indigo-600 text-sm font-semibold uppercase tracking-wider mb-1">Total Laporan</div>
+                <div class="text-5xl font-bold text-gray-900">{{ dashboard_data.total_laporan | default(0) }}</div>
+            </div>
 
-  </div>
-</div>
+            {# Card Laporan Terkirim #}
+            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center justify-center text-center transition-transform transform hover:scale-105 duration-300 cursor-pointer border-t-4 border-blue-500">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600 mb-4">
+                    <i class="fas fa-paper-plane fa-2x"></i>
+                </div>
+                <div class="text-blue-600 text-sm font-semibold uppercase tracking-wider mb-1">Laporan Terkirim</div>
+                <div class="text-5xl font-bold text-gray-900">{{ dashboard_data.laporan_terkirim | default(0) }}</div>
+            </div>
+
+            {# Card Laporan Sukses #}
+            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center justify-center text-center transition-transform transform hover:scale-105 duration-300 cursor-pointer border-t-4 border-green-500">
+                <div class="p-3 rounded-full bg-green-100 text-green-600 mb-4">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+                <div class="text-green-600 text-sm font-semibold uppercase tracking-wider mb-1">Laporan Sukses</div>
+                <div class="text-5xl font-bold text-gray-900">{{ dashboard_data.laporan_sukses | default(0) }}</div>
+            </div>
+
+            {# Card Total Pengguna (Opsional) #}
+            {% if dashboard_data.total_users is defined %}
+            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center justify-center text-center transition-transform transform hover:scale-105 duration-300 cursor-pointer border-t-4 border-purple-500">
+                <div class="p-3 rounded-full bg-purple-100 text-purple-600 mb-4">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+                <div class="text-purple-600 text-sm font-semibold uppercase tracking-wider mb-1">Total Pengguna</div>
+                <div class="text-5xl font-bold text-gray-900">{{ dashboard_data.total_users | default(0) }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        {# Bagian Akses Cepat #}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-10 text-center">
+          
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{{ url_for('admin_laporan_kinerja') }}" class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+                    <i class="fas fa-file-alt mr-3 text-xl"></i> Kelola Laporan
+                </a>
+                {# Jika ada halaman kelola pengguna, tambahkan tautan di sini #}
+            </div>
+        </div>
+
+        {# Laporan Terbaru dengan Tabel yang Lebih Rapi #}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-10">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b-2 border-gray-200 pb-3">Aktivitas Laporan Terbaru</h2>
+            {% if dashboard_data.laporan_terbaru %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul Laporan</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for laporan in dashboard_data.laporan_terbaru %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ laporan.id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ laporan.judul_laporan }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ laporan.tanggal | date('%d-%m-%Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            {% if laporan.status == 'Sukses' %}bg-green-100 text-green-800{% elif laporan.status == 'Terkirim' %}bg-blue-100 text-blue-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ laporan.status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="{{ url_for('admin_edit_laporan', laporan_id=laporan.id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">Tidak ada laporan terbaru yang ditemukan.</p>
+            {% endif %}
+        </div>
+    </div> {# === END: Tutup div wrapper di sini === #}
 
 {% endblock %}

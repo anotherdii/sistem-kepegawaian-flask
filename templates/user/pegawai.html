@@ -26,8 +26,12 @@
                 ></path>
               </svg>
             </div>
-            <h2 class="text-[#141216] text-lg font-bold leading-tight tracking-[-0.015em]">Employee Data System</h2>
-          </div>
+             <h2 class="text-[#141216] text-lg font-bold leading-tight tracking-[-0.015em]">
+                 <a href="{{ url_for('user_dashboard') }}" class="text-[#141216] hover:text-blue-600">
+                     Employee Data System
+                 </a>
+             </h2>
+           </div>
           <div class="flex flex-1 justify-end gap-8">
             <div class="flex items-center gap-9">
               <a class="text-[#141216] text-sm font-medium leading-normal" href="/user/ds">Dashboard</a>
@@ -46,6 +50,7 @@
           </div>
         </header>
         <div class="px-40 flex flex-1 justify-center py-5">
+                    {%block isi %}
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="flex p-4 @container">
               <div class="flex w-full flex-col gap-4 items-center">
@@ -71,7 +76,7 @@
                   <button
                     class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-8 px-4 flex-row-reverse bg-[#f2f1f4] text-[#141216] text-sm font-medium leading-normal w-fit"
                   >
-                    <a href="/halaman-tujuan" class="truncate">Completed</a>
+                    <a href="/laporan_kinerja" class="truncate">Completed</a>
 
                   </button>
                 </div>
@@ -139,6 +144,7 @@
               </div>
             </div>
           </div>
+          {%endblock%}
         </div>
       </div>
     </div>

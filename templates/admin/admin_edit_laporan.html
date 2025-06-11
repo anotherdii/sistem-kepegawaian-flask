@@ -1,0 +1,39 @@
+{# templates/admin_edit_laporan.html #}
+
+{% extends 'admin/layout.html' %} {# Pastikan ini mengarah ke base layout admin kamu #}
+
+{% block content %}
+    <h1 class="text-3xl font-extrabold text-center mb-6" style="color: #4f46e5;">Edit Laporan Kinerja</h1>
+    <p class="text-center text-gray-text mb-8" style="color: #6b7280;">Perbarui detail laporan kinerja ID: **{{ laporan.id }}**</p>
+
+    {# Flash messages akan ditampilkan di admin_base.html #}
+
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-lg mx-auto"> {# Container bergaya kartu #}
+        <form action="{{ url_for('admin_edit_laporan', laporan_id=laporan.id) }}" method="POST" class="space-y-6">
+            <div>
+                <label for="judul_laporan" class="form-label block text-gray-700 text-sm font-bold mb-2">Judul Laporan:</label>
+                <input type="text" id="judul_laporan" name="judul_laporan"
+                       class="form-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       value="{{ laporan.judul_laporan }}" required>
+            </div>
+            <div>
+                <label for="tanggal" class="form-label block text-gray-700 text-sm font-bold mb-2">Tanggal Laporan:</label>
+                <input type="date" id="tanggal" name="tanggal"
+                       class="form-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       value="{{ laporan.tanggal_str }}" required> {# Menggunakan laporan.tanggal_str #}
+            </div>
+            <div>
+                <label for="status" class="form-label block text-gray-700 text-sm font-bold mb-2">Status:</label>
+                <select id="status" name="status"
+                        class="form-select shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <option value="Terkirim" {% if laporan.status == 'Terkirim' %}selected{% endif %}>Terkirim</option>
+                    <option value="Sukses" {% if laporan.status == 'Sukses' %}selected{% endif %}>Sukses</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-4">
+                <a href="{{ url_for('admin_laporan_kinerja') }}" class="btn btn-secondary px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">Batal</a>
+                <button type="submit" class="btn btn-primary px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

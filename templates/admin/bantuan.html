@@ -1,0 +1,52 @@
+{# templates/admin_bantuan.html #}
+
+{% extends 'admin/layout.html' %} {# Pastikan ini sesuai dengan lokasi layout admin kamu #}
+
+{% block content %}
+    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-lg shadow-xl mb-10 text-purple text-center">
+        <h1 class="text-4xl font-extrabold mb-3">Pusat Bantuan & FAQ</h1>
+        <p class="text-xl font-light opacity-90">Sistem Kepegawaian</p>
+        <p class="mt-4 text-base opacity-80">Temukan jawaban atas pertanyaan Anda dan informasi penting mengenai penggunaan sistem.</p>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        {# Bagian FAQ #}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-10">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-gray-200 pb-3">Pertanyaan Umum (FAQ)</h2>
+            <div class="space-y-6">
+                {% for item in faq_items %}
+                    <div class="border-b pb-4 last:border-b-0 last:pb-0"> {# last:border-b-0 untuk item terakhir #}
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ item.question }}</h3>
+                        <p class="text-gray-700">{{ item.answer }}</p>
+                    </div>
+                {% endfor %}
+                {% if not faq_items %}
+                    <p class="text-gray-500 text-center">Belum ada pertanyaan umum yang tersedia.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Bagian Fitur Utama #}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-10">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-gray-200 pb-3">Fitur Utama Sistem</h2>
+            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                {% for fitur in fitur_utama %}
+                    <li><i class="fas fa-dot-circle text-purple-500 mr-2"></i>{{ fitur }}</li>
+                {% endfor %}
+                {% if not fitur_utama %}
+                    <p class="text-gray-500 text-center">Daftar fitur belum tersedia.</p>
+                {% endif %}
+            </ul>
+        </div>
+
+        {# Bagian Kontak Dukungan #}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-10 text-center">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-gray-200 pb-3">Hubungi Dukungan</h2>
+            <p class="text-lg text-gray-700 mb-4">Jika Anda memiliki pertanyaan lebih lanjut atau membutuhkan bantuan teknis, silakan hubungi kami melalui email:</p>
+            <a href="mailto:{{ email_dukungan }}" class="text-blue-600 hover:text-blue-800 font-semibold text-xl">
+                <i class="fas fa-envelope mr-2"></i> {{ email_dukungan }}
+            </a>
+            <p class="text-sm text-gray-500 mt-4">Kami akan berusaha merespon secepatnya.</p>
+        </div>
+    </div>
+{% endblock %}

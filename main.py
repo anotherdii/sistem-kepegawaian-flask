@@ -1,22 +1,38 @@
 from flask import Flask, render_template, request, redirect, flash, session, url_for
 from flaskext.mysql import MySQL
 import pymysql
+from datetime import datetime
+from datetime import date
+import mysql.connector
+
 app = Flask(__name__)
 app.secret_key = 'rahasia'
 db=MySQL(host="localhost", user="root", passwd="", db="dbtokoa")
 db.init_app(app)
 
+@app.template_filter('date')
+def format_date_filter(value, format="%Y-%m-%d"):
+    if value == 'now':
+        return datetime.now().strftime(format)
+    # Jika kamu ingin memformat objek date/datetime lainnya
+    if isinstance(value, (date, datetime)):
+        return value.strftime(format)
+    return value # Return original value if not a date or 'now'
+
+db_config = {
+    'host': 'localhost',  # Sesuaikan jika host MySQL kamu berbeda
+    'user': 'root',       # Ganti dengan username MySQL kamu
+    'password': '', # Ganti dengan password MySQL kamu
+    'database': 'dbtokoa'
+}
+
 @app.route('/')
 def index():
     return render_template('user/index.html')
 
-def dbuser():
-    return pymysql.connect(
-        host='localhost',
-        user='root',
-        password='',
-        database='dbtokoa',
-        cursorclass=pymysql.cursors.DictCursor)
+def get_db_connection():
+    conn = mysql.connector.connect(**db_config)
+    return conn
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -93,7 +109,48 @@ def kontak():
 def home():
     if 'loggedin' not in session or session['hak_akses'] != 'admin':
         return redirect('/login')
-    return render_template('admin/index.html')
+
+    conn = None
+    cursor = None
+    dashboard_data = {} # Dictionary untuk menyimpan semua data dashboard
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # 1. Total Laporan
+        cursor.execute("SELECT COUNT(id) AS total_laporan FROM laporan")
+        dashboard_data['total_laporan'] = cursor.fetchone()['total_laporan']
+
+        # 2. Laporan Status 'Terkirim'
+        cursor.execute("SELECT COUNT(id) AS laporan_terkirim FROM laporan WHERE status = 'Terkirim'")
+        dashboard_data['laporan_terkirim'] = cursor.fetchone()['laporan_terkirim']
+
+        # 3. Laporan Status 'Sukses'
+        cursor.execute("SELECT COUNT(id) AS laporan_sukses FROM laporan WHERE status = 'Sukses'")
+        dashboard_data['laporan_sukses'] = cursor.fetchone()['laporan_sukses']
+
+        # 4. Laporan Terbaru (misalnya 5 laporan terakhir)
+        cursor.execute("SELECT id, judul_laporan, tanggal, status FROM laporan ORDER BY tanggal DESC, id DESC LIMIT 5")
+        dashboard_data['laporan_terbaru'] = cursor.fetchall()
+        
+        # Tambahan: Jumlah Pengguna (jika ada tabel 'users' dan ingin menampilkan)
+        cursor.execute("SELECT COUNT(id) AS total_users FROM laporan")
+        dashboard_data['total_users'] = cursor.fetchone()['total_users']
+
+
+    except mysql.connector.Error as err:
+        flash(f"Terjadi kesalahan database saat memuat dashboard: {err}", 'error')
+        print(f"Error loading dashboard data: {err}") # Cetak error ke konsol Flask
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+    # Render template dengan data dashboard
+    return render_template('/admin/index.html', dashboard_data=dashboard_data)
+
     
 
 @app.route('/admin/admin-kelola-barang')
@@ -292,7 +349,7 @@ def user_dashboard():
     data = None
     try:
         user_id = session.get('id')
-        connection = dbuser()
+        connection = get_db_connection()
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM barang WHERE id = %s", (user_id,))
             data = cursor.fetchone()
@@ -312,9 +369,254 @@ def ds():
 def setting():
     return render_template('user/setting.html')
 
+@app.route('/laporan_kinerja', methods=['GET', 'POST'])
+def laporan_kinerja():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True) # dictionary=True agar hasil query berupa dict
+
+    if request.method == 'POST':
+        judul_laporan = request.form['judul_laporan']
+        tanggal_str = request.form['tanggal']
+        status = request.form['status']
+
+        # Konversi tanggal dari string (YYYY-MM-DD) ke objek date
+        try:
+            tanggal = date.fromisoformat(tanggal_str)
+        except ValueError:
+            flash('Format tanggal tidak valid. Gunakan YYYY-MM-DD.', 'error')
+            return redirect(url_for('laporan_kinerja'))
+
+        try:
+            # Query untuk memasukkan data ke tabel 'laporan'
+            # Pastikan kolom di tabel 'laporan' sesuai: id (auto-increment), judul_laporan, tanggal, status
+            cursor.execute(
+                "INSERT INTO laporan (judul_laporan, tanggal, status) VALUES (%s, %s, %s)",
+                (judul_laporan, tanggal, status)
+            )
+            conn.commit()
+            flash('Laporan kinerja berhasil ditambahkan!', 'success')
+            return redirect(url_for('laporan_kinerja'))
+        except mysql.connector.Error as err:
+            flash(f"Error: {err}", 'error')
+            conn.rollback() # Batalkan jika ada error
+    
+    # Ambil semua laporan untuk ditampilkan di tabel
+    cursor.execute("SELECT * FROM laporan ORDER BY tanggal DESC, id DESC")
+    laporan_data = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    
+    return render_template('laporan_kinerja.html', laporan_data=laporan_data)
+
+@app.route('/admin/laporan_kinerja', methods=['GET'])
+def admin_laporan_kinerja():
+    # Proteksi rute: hanya admin yang bisa mengakses
+    if 'hak_akses' not in session or session['hak_akses'] != 'admin':
+        flash('Akses ditolak. Hanya admin yang bisa mengelola laporan.', 'error')
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    cursor.execute("SELECT * FROM laporan ORDER BY tanggal DESC, id DESC")
+    laporan_data = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('/admin/admin_laporan_kinerja.html', laporan_data=laporan_data)
+
+# In app.py
+
+@app.route('/admin/edit_laporan/<int:laporan_id>', methods=['GET', 'POST'])
+def admin_edit_laporan(laporan_id):
+    if 'hak_akses' not in session or session['hak_akses'] != 'admin':
+        flash('Akses ditolak. Hanya admin yang bisa mengelola laporan.', 'error')
+        return redirect(url_for('login'))
+
+    conn = None # Inisialisasi koneksi dan kursor
+    cursor = None
+    laporan = None # Variabel untuk menyimpan data laporan yang akan diedit
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True) # Mengambil data sebagai dictionary
+
+        if request.method == 'GET':
+            # Ambil data laporan berdasarkan ID
+            cursor.execute("SELECT id, judul_laporan, tanggal, status FROM laporan WHERE id = %s", (laporan_id,))
+            laporan = cursor.fetchone() # Ambil satu baris data
+            
+            if not laporan: # Jika laporan tidak ditemukan
+                flash('Laporan tidak ditemukan.', 'error')
+                return redirect(url_for('admin_laporan_kinerja'))
+            
+            # Format tanggal ke string 'YYYY-MM-DD' agar kompatibel dengan input type="date"
+            if isinstance(laporan['tanggal'], date):
+                laporan['tanggal_str'] = laporan['tanggal'].isoformat()
+            else:
+                laporan['tanggal_str'] = '' # Atau tangani jika tanggal tidak valid
+            
+            # Tampilkan formulir edit dengan data laporan yang sudah ada
+            return render_template('/admin/admin_edit_laporan.html', laporan=laporan)
+
+        elif request.method == 'POST':
+            # Ambil data dari formulir yang dikirim (POST)
+            judul_laporan_baru = request.form['judul_laporan']
+            tanggal_str_baru = request.form['tanggal']
+            status_baru = request.form['status']
+
+            # Validasi format tanggal
+            try:
+                tanggal_baru = date.fromisoformat(tanggal_str_baru)
+            except ValueError:
+                flash('Format tanggal tidak valid. Gunakan YYYY-MM-DD.', 'error')
+                # Kembali ke halaman edit laporan yang sama
+                return redirect(url_for('/admin/admin_edit_laporan', laporan_id=laporan_id)) 
+
+            # Validasi status yang diizinkan (penting untuk keamanan)
+            if status_baru not in ['Terkirim', 'Sukses']:
+                flash('Status yang dipilih tidak valid.', 'error')
+                # Kembali ke halaman edit laporan yang sama
+                return redirect(url_for('admin_edit_laporan', laporan_id=laporan_id))
+
+            # Lakukan UPDATE ke database
+            cursor.execute(
+                "UPDATE laporan SET judul_laporan = %s, tanggal = %s, status = %s WHERE id = %s",
+                (judul_laporan_baru, tanggal_baru, status_baru, laporan_id)
+            )
+            conn.commit() # Simpan perubahan
+            flash('Laporan kinerja berhasil diperbarui.', 'success')
+            # Redirect kembali ke daftar laporan admin setelah berhasil
+            return redirect(url_for('admin_laporan_kinerja'))
+
+    except mysql.connector.Error as err:
+        flash(f"Terjadi kesalahan database: {err}", 'error')
+        if conn:
+            conn.rollback() # Batalkan transaksi jika ada error
+    finally:
+        # Pastikan koneksi dan kursor selalu ditutup
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+    # Fallback return: Jika ada error tak terduga dan tidak ada redirect terjadi di atas
+    return redirect(url_for('admin_laporan_kinerja'))
 
 
+@app.route('/admin/update_laporan_status/<int:laporan_id>', methods=['POST'])
+def update_laporan_status(laporan_id):
+    if 'hak_akses' not in session or session['hak_akses'] != 'admin':
+        flash('Akses ditolak. Hanya admin yang bisa mengelola laporan.', 'error')
+        return redirect(url_for('login'))
+      
+    
+    new_status = request.form['status']
+    
+    if new_status not in ['Terkirim', 'Sukses']:
+        flash('Status tidak valid.', 'error')
+        return redirect(url_for('admin_laporan_kinerja'))
 
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute(
+            "UPDATE laporan SET status = %s WHERE id = %s",
+            (new_status, laporan_id)
+        )
+        conn.commit()
+        flash(f'Status laporan ID {laporan_id} berhasil diperbarui menjadi "{new_status}".', 'success')
+    except mysql.connector.Error as err:
+        flash(f"Error memperbarui status: {err}", 'error')
+        if conn:
+            conn.rollback()
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+    return redirect(url_for('admin_laporan_kinerja'))
+
+@app.route('/admin/delete_laporan/<int:laporan_id>', methods=['POST'])
+def admin_delete_laporan(laporan_id):
+    # Proteksi rute: hanya admin yang bisa mengakses
+    if 'hak_akses' not in session or session['hak_akses'] != 'admin':
+        flash('Akses ditolak. Hanya admin yang bisa mengelola laporan.', 'error')
+        return redirect(url_for('login'))
+
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Eksekusi perintah DELETE SQL
+        cursor.execute("DELETE FROM laporan WHERE id = %s", (laporan_id,))
+        conn.commit() # Simpan perubahan ke database
+        flash(f'Laporan ID {laporan_id} berhasil dihapus.', 'success')
+    except mysql.connector.Error as err:
+        flash(f"Terjadi kesalahan database saat menghapus laporan: {err}", 'error')
+        if conn:
+            conn.rollback() # Batalkan transaksi jika ada error
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+    # Redirect kembali ke daftar laporan admin setelah operasi
+    return redirect(url_for('admin_laporan_kinerja'))
+
+@app.route('/admin/bantuan')
+def admin_bantuan():
+    # Proteksi rute: hanya admin yang bisa mengakses
+    if 'hak_akses' not in session or session['hak_akses'] != 'admin':
+        flash('Akses ditolak. Hanya admin yang bisa mengelola laporan.', 'error')
+        return redirect(url_for('login'))
+
+    # Data FAQ, email dukungan, dan fitur (bisa diperluas)
+    faq_items = [
+        {
+            'question': 'Bagaimana cara menambahkan laporan kinerja baru?',
+            'answer': 'Anda dapat menambahkan laporan kinerja melalui halaman "Kelola Laporan" lalu klik tombol "Tambah Laporan Baru". Isi formulir yang tersedia dan simpan.'
+        },
+        {
+            'question': 'Bagaimana cara mengubah status laporan?',
+            'answer': 'Pada halaman "Kelola Laporan", Anda bisa langsung mengubah status "Terkirim" menjadi "Sukses" melalui dropdown di kolom Status.'
+        },
+        {
+            'question': 'Apa yang terjadi jika saya menghapus laporan?',
+            'answer': 'Menghapus laporan akan secara permanen menghilangkan data laporan tersebut dari sistem. Pastikan Anda benar-benar yakin sebelum menghapus.'
+        },
+        {
+            'question': 'Bagaimana cara memperbarui data laporan yang sudah ada?',
+            'answer': 'Pada halaman "Kelola Laporan", klik tombol "Edit" di samping laporan yang ingin diubah. Anda dapat mengedit judul, tanggal, dan status laporan.'
+        },
+        # Tambahkan lebih banyak FAQ di sini
+    ]
+
+    fitur_utama = [
+        'Manajemen Laporan Kinerja: Tambah, Lihat, Edit, Hapus laporan.',
+        'Pembaruan Status Laporan Cepat: Ubah status laporan langsung dari daftar.',
+        'Dashboard Administratif: Ringkasan statistik laporan dan pengguna.',
+        'Sistem Autentikasi Pengguna: Login dan logout dengan hak akses berbeda.'
+        # Tambahkan lebih banyak fitur di sini
+    ]
+
+    email_dukungan = 'support@sistemkepegawaian.com' # Ganti dengan email dukungan yang sebenarnya
+
+    return render_template('/admin/bantuan.html',
+                           faq_items=faq_items,
+                           fitur_utama=fitur_utama,
+                           email_dukungan=email_dukungan)
+
+       
 
 if __name__ == '__main__':
     app.run(debug=True)

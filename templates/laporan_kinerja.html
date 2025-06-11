@@ -1,0 +1,198 @@
+{% extends 'user/pegawai.html' %}
+{% block isi %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Kinerja Pegawai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --purple-main: #6B46C1;
+            --purple-light: #F3ECFF;
+            --gray-text: #4B5563;
+            --white: #FFFFFF;
+            --border-color: #E5E7EB;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-text);
+        }
+
+        .container-wrapper {
+            background-color: var(--purple-light);
+            padding: 2.5rem 0;
+            min-height: calc(100vh - 80px); /* Adjust based on header height */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--purple-main);
+        }
+
+        .form-input, .form-select, .form-textarea, .form-info {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: var(--gray-text);
+            background-color: #F9FAFB;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-info { /* Style for non-editable info fields */
+            background-color: #ECEFF1;
+            border-color: #DDE1E3;
+            color: #6B7280;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--purple-main);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.2);
+        }
+
+        .btn-primary {
+            background-color: var(--purple-main);
+            color: var(--white);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #5539A0;
+        }
+
+        .table-header {
+            background-color: var(--purple-main);
+            color: var(--white);
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-weight: 700;
+        }
+
+        .table-row:nth-child(even) {
+            background-color: var(--purple-light);
+        }
+        .table-row:nth-child(odd) {
+            background-color: var(--white);
+        }
+
+        .table-cell {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .flash-message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: var(--white);
+        }
+
+        .flash-success {
+            background-color: #4CAF50;
+        }
+
+        .flash-error {
+            background-color: #F44336;
+        }
+        .flash-info {
+            background-color: #2196F3; /* Blue for info */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container-wrapper">
+        <div class="card">
+            <h1 class="text-3xl font-extrabold text-center mb-6 text-purple-main">Laporan Kinerja Pegawai</h1>
+            <p class="text-center text-gray-text mb-8">Masukkan detail laporan kinerja terbaru.</p>
+
+            {# Flash Messages #}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-6">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {# Form Input Laporan #}
+            <form action="/laporan_kinerja" method="POST" class="space-y-6 mb-10">
+                <div>
+                    <label for="judul_laporan" class="form-label">Judul Laporan</label>
+                    <input type="text" id="judul_laporan" name="judul_laporan" class="form-input" placeholder="Misal: Laporan Penjualan Q1 2024" required>
+                </div>
+                <div>
+                    <label for="tanggal" class="form-label">Tanggal Laporan</label>
+                    <input type="date" id="tanggal" name="tanggal" class="form-input" value="{{ 'now' | date('%Y-%m-%d') }}" required>
+                </div>
+                <div>
+                    <label class="form-label">Status Laporan</label>
+                    <p class="form-info">Status default laporan adalah **Terkirim**. Admin akan mengubahnya nanti.</p>
+                    <input type="hidden" name="status" value="Terkirim"> {# Hidden input to send status #}
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn-primary">Kirim Laporan</button>
+                </div>
+            </form>
+
+            <hr class="my-10 border-t-2 border-dashed border-gray-200">
+
+            {# Daftar Laporan Tersimpan #}
+            <h2 class="text-2xl font-bold text-center mb-6 text-purple-main">Daftar Laporan Kinerja Anda</h2>
+            {% if laporan_data %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full rounded-lg overflow-hidden shadow-md">
+                    <thead>
+                        <tr>
+                            <th class="table-header">No.</th>
+                            <th class="table-header">Judul Laporan</th>
+                            <th class="table-header">Tanggal</th>
+                            <th class="table-header">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for laporan in laporan_data %}
+                        <tr class="table-row">
+                            <td class="table-cell">{{ loop.index }}</td>
+                            <td class="table-cell">{{ laporan.judul_laporan }}</td>
+                            <td class="table-cell">{{ laporan.tanggal | date('%d-%m-%Y') }}</td> {# Apply filter for display #}
+                            <td class="table-cell">{{ laporan.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center text-gray-500">Belum ada laporan kinerja yang tersimpan.</p>
+            {% endif %}
+
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

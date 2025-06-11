@@ -1,0 +1,58 @@
+{# di templates/admin_laporan_kinerja.html #}
+
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+    {# ... (judul, flash messages, dll.) ... #}
+
+    {% if laporan_data %}
+        <div class="overflow-x-auto bg-white rounded-lg shadow-md p-4">
+            <table class="table table-striped table-hover min-w-full">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-4 text-left" style="background-color: #6B46C1; color: white;">ID</th>
+                        <th class="py-3 px-4 text-left" style="background-color: #6B46C1; color: white;">Judul Laporan</th>
+                        <th class="py-3 px-4 text-left" style="background-color: #6B46C1; color: white;">Tanggal</th>
+                        <th class="py-3 px-4 text-left" style="background-color: #6B46C1; color: white;">Status</th>
+                        <th class="py-3 px-4 text-left" style="background-color: #6B46C1; color: white;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for laporan in laporan_data %}
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200">{{ laporan.id }}</td>
+                            <td class="py-2 px-4 border-b border-gray-200">{{ laporan.judul_laporan }}</td>
+                            <td class="py-2 px-4 border-b border-gray-200">{{ laporan.tanggal | date('%d-%m-%Y') }}</td>
+                            <td class="py-2 px-4 border-b border-gray-200">
+                                {# Formulir Update Status Cepat (jika masih diperlukan) #}
+                                <form action="{{ url_for('update_laporan_status', laporan_id=laporan.id) }}" method="POST" class="inline-block">
+                                    <select name="status" onchange="this.form.submit()"
+                                            class="form-select form-select-sm
+                                            {% if laporan.status == 'Sukses' %}bg-green-100 text-green-700 border-green-500{% elif laporan.status == 'Terkirim' %}bg-blue-100 text-blue-700 border-blue-500{% endif %}">
+                                        <option value="Terkirim" {% if laporan.status == 'Terkirim' %}selected{% endif %}>Terkirim</option>
+                                        <option value="Sukses" {% if laporan.status == 'Sukses' %}selected{% endif %}>Sukses</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="py-2 px-4 border-b border-gray-200 flex items-center"> {# Tambahkan flex untuk mengatur tombol #}
+                                {# Tombol EDIT #}
+                                <a href="{{ url_for('admin_edit_laporan', laporan_id=laporan.id) }}" class="btn btn-sm btn-primary bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded-md mr-2">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+
+                                {# FORMULIR HAPUS BARU #}
+                                <form action="{{ url_for('admin_delete_laporan', laporan_id=laporan.id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini? Tindakan ini tidak dapat dibatalkan.');">
+                                    <button type="submit" class="btn btn-sm btn-danger bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-md">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-center text-gray-500">Belum ada laporan kinerja yang tersimpan.</p>
+    {% endif %}
+{% endblock %}
