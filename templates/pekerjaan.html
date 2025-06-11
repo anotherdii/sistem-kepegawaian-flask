@@ -1,0 +1,76 @@
+{% extends 'user/pegawai.html' %}
+{% block isi %}
+    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-lg shadow-xl mb-10 text-white text-center">
+        <h1 class="text-4xl font-extrabold mb-3">Riwayat Pekerjaan Pegawai</h1>
+        <p class="text-xl font-light opacity-90">Detail riwayat pekerjaan untuk <span class="font-semibold">{{ pegawai.nama_lengkap | default('Pegawai Contoh') }}</span></p>
+        <p class="mt-2 text-base opacity-80">ID Pegawai: {{ pegawai.id | default('N/A') }} | Jabatan: {{ pegawai.jabatan | default('N/A') }}</p>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        {# Detail Pegawai (Untuk Konteks) #}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-10">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-gray-200 pb-3">Detail Pegawai</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800">
+                <div>
+                    <p><strong class="text-gray-600">Nama Lengkap:</strong> {{ pegawai.nama_lengkap | default('N/A') }}</p>
+                    <p><strong class="text-gray-600">ID Pegawai:</strong> {{ pegawai.id | default('N/A') }}</p>
+                    <p><strong class="text-gray-600">Jabatan:</strong> {{ pegawai.jabatan | default('N/A') }}</p>
+                </div>
+                <div>
+                    <p><strong class="text-gray-600">Divisi:</strong> {{ pegawai.divisi | default('N/A') }}</p>
+                    <p><strong class="text-gray-600">Email:</strong> {{ pegawai.email | default('N/A') }}</p>
+                </div>
+            </div>
+        </div>
+
+        {# Bagian Daftar Riwayat Pekerjaan #}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-10">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-gray-200 pb-3">Riwayat Pekerjaan</h2>
+
+            {% if riwayat_pekerjaan %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perusahaan</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Mulai</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Selesai</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
+                                {# Tambahkan kolom Aksi jika ada fitur Edit/Hapus riwayat pekerjaan #}
+                                {# <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th> #}
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for pekerjaan in riwayat_pekerjaan %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ pekerjaan.perusahaan }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ pekerjaan.jabatan }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ pekerjaan.tanggal_mulai }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ pekerjaan.tanggal_selesai }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-800 max-w-xs overflow-hidden text-ellipsis">{{ pekerjaan.deskripsi | default('N/A') }}</td> {# Tambah max-w-xs untuk deskripsi panjang #}
+                                    {# Tombol Aksi (jika ada) #}
+                                    {# <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="{{ url_for('admin_edit_pekerjaan', id=pekerjaan.id) }}" class="text-indigo-600 hover:text-indigo-900 mr-2">Edit</a>
+                                        <form action="{{ url_for('admin_delete_pekerjaan', id=pekerjaan.id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus riwayat pekerjaan ini?');" class="inline-block">
+                                            <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                                        </form>
+                                    </td> #}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-center py-4">Belum ada riwayat pekerjaan yang ditampilkan.</p>
+            {% endif %}
+
+            {# Tombol Kembali #}
+            <div class="mt-6 text-center">
+                <a href="#" onclick="history.back()" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

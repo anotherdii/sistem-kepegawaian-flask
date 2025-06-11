@@ -616,7 +616,132 @@ def admin_bantuan():
                            fitur_utama=fitur_utama,
                            email_dukungan=email_dukungan)
 
-       
+@app.route('/info_keluarga') # Tidak ada lagi <int:pegawai_id>
+def admin_info_keluarga():
+    if 'hak_akses' not in session or session['hak_akses'] != 'user':
+        flash("Anda tidak memiliki izin mengakses halaman ini", "danger")
+        return redirect(url_for('login'))
+
+    # Data pegawai dan keluarga DI-HARDCODE (Statis)
+    pegawai_contoh = {
+        'id': 101,
+        'nama_lengkap': 'Budi Santoso',
+        'jabatan': 'Manajer Proyek',
+        'divisi': 'Teknologi Informasi',
+        'email': 'budi.s@example.com'
+    }
+
+    data_keluarga_statis = [
+        {'hubungan': 'Istri', 'nama': 'Dewi Lestari', 'tanggal_lahir': '1985-07-12', 'pekerjaan': 'Desainer Grafis', 'telepon': '081234567890'},
+        {'hubungan': 'Anak', 'nama': 'Putra Pratama', 'tanggal_lahir': '2010-03-25', 'pekerjaan': 'Pelajar', 'telepon': 'N/A'},
+        {'hubungan': 'Anak', 'nama': 'Putri Ayu', 'tanggal_lahir': '2015-09-01', 'pekerjaan': 'Pelajar', 'telepon': 'N/A'},
+    ]
+
+    return render_template('admin_info_keluarga.html',
+                           pegawai=pegawai_contoh,
+                           data_keluarga=data_keluarga_statis)
+      
+
+
+@app.route('/sejarah_pendidikan')
+def admin_sejarah_pendidikan():
+    if 'hak_akses' not in session or session['hak_akses'] != 'user':
+        flash("Anda tidak memiliki izin mengakses halaman ini", "danger")
+        return redirect(url_for('login'))
+
+    # Data pegawai dan sejarah pendidikan DI-HARDCODE (Statis)
+    pegawai_contoh = {
+        'id': 101,
+        'nama_lengkap': 'Budi Santoso',
+        'jabatan': 'Manajer Proyek',
+        'divisi': 'Teknologi Informasi',
+        'email': 'budi.s@example.com'
+    }
+
+    sejarah_pendidikan_statis = [
+        {
+            'tingkat': 'SD',
+            'institusi': 'SD Negeri 01 Jakarta',
+            'tahun_masuk': '1992',
+            'tahun_lulus': '1998',
+            'jurusan': 'N/A'
+        },
+        {
+            'tingkat': 'SMP',
+            'institusi': 'SMP Swasta Harapan',
+            'tahun_masuk': '1998',
+            'tahun_lulus': '2001',
+            'jurusan': 'N/A'
+        },
+        {
+            'tingkat': 'SMA',
+            'institusi': 'SMA Negeri 5 Bandung',
+            'tahun_masuk': '2001',
+            'tahun_lulus': '2004',
+            'jurusan': 'IPA'
+        },
+        {
+            'tingkat': 'Sarjana (S1)',
+            'institusi': 'Universitas Teknologi Jakarta',
+            'tahun_masuk': '2004',
+            'tahun_lulus': '2008',
+            'jurusan': 'Teknik Informatika'
+        }
+    ]
+
+    return render_template('sejarahpendidikan.html',
+                           pegawai=pegawai_contoh,
+                           sejarah_pendidikan=sejarah_pendidikan_statis)
+
+
+# di app.py
+
+# ... (kode impor, app setup, session, redirect, url_for, render_template, flash, dll.) ...
+
+# --- Rute BARU: Halaman Riwayat Pekerjaan Admin (STATIS) ---
+@app.route('/riwayat_pekerjaan')
+def admin_riwayat_pekerjaan():
+    if 'hak_akses' not in session or session['hak_akses'] != 'user':
+        flash("Anda tidak memiliki izin mengakses halaman ini", "danger")
+        return redirect(url_for('login'))
+
+    # Data pegawai dan riwayat pekerjaan DI-HARDCODE (Statis)
+    pegawai_contoh = {
+        'id': 101,
+        'nama_lengkap': 'Budi Santoso',
+        'jabatan': 'Manajer Proyek',
+        'divisi': 'Teknologi Informasi',
+        'email': 'budi.s@example.com'
+    }
+
+    riwayat_pekerjaan_statis = [
+        {
+            'perusahaan': 'PT Jaya Abadi',
+            'jabatan': 'Staf IT',
+            'tanggal_mulai': '2008-07-01',
+            'tanggal_selesai': '2012-12-31',
+            'deskripsi': 'Bertanggung jawab atas pemeliharaan jaringan dan dukungan teknis.'
+        },
+        {
+            'perusahaan': 'CV Maju Bersama',
+            'jabatan': 'Supervisor IT',
+            'tanggal_mulai': '2013-01-15',
+            'tanggal_selesai': '2018-06-30',
+            'deskripsi': 'Memimpin tim IT dan mengelola proyek-proyek infrastruktur.'
+        },
+        {
+            'perusahaan': 'PT Inovasi Digital',
+            'jabatan': 'Manajer Proyek',
+            'tanggal_mulai': '2018-07-10',
+            'tanggal_selesai': 'Sekarang', # atau '2025-06-11' jika ingin tanggal spesifik
+            'deskripsi': 'Mengelola siklus hidup proyek pengembangan perangkat lunak.'
+        }
+    ]
+
+    return render_template('pekerjaan.html',
+                           pegawai=pegawai_contoh,
+                           riwayat_pekerjaan=riwayat_pekerjaan_statis)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
