@@ -1,189 +1,1161 @@
-{% extends 'user/layout.html' %}
-{% block isi %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIKepegawaian - Sistem Informasi Kepegawaian</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<!-- Hero Section -->
-<section id="home" class="hero d-flex align-items-center justify-content-center text-center text-white">
-  <div class="container px-4">
-    <h1 class="display-4 fw-bold">Selamat Datang di Sistem Kepegawaian</h1>
-    <p class="lead">Kelola data pegawai Anda dengan lebih mudah dan efisien</p>
-  </div>
-</section>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
 
-<!-- Tentang Section -->
-<section id="about" class=" py-5 bg-white" style="min-height: 100vh;">
-  <div class="container about-container">
-    <div class="mb-5 text-center">
-      <h1>Tentang Aplikasi SIKepegawaian</h1>
-      <p>
-        Selamat datang di Sistem Informasi Kepegawaian (SIKepegawaian)! Aplikasi ini dirancang untuk mempermudah pengelolaan data dan administrasi sumber daya manusia di instansi atau perusahaan Anda.
-      </p>
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #6f42c1 0%, #8b5cf6 50%, #a855f7 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+
+        .loading-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* Navigation */
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 2px 20px rgba(111, 66, 193, 0.1);
+            transform: translateY(-100%);
+            animation: slideDown 0.8s ease-out 0.5s forwards;
+        }
+
+        @keyframes slideDown {
+            to { transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+
+            background-image: url('/static/bk.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="grad" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1)"/><stop offset="100%" style="stop-color:rgba(255,255,255,0)"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23grad)"/><circle cx="800" cy="300" r="150" fill="url(%23grad)"/><circle cx="400" cy="700" r="120" fill="url(%23grad)"/></svg>') no-repeat center center;
+            background-size: cover;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out 1s forwards;
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease-out 1.3s forwards;
+            font-size: 1.3rem;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 2s forwards;
+        }
+
+        .scroll-indicator i {
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Section Animations */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease-out;
+        }
+
+        .fade-in-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* About Section */
+        #about {
+            background: linear-gradient(45deg, #f8f9ff 0%, #ffffff 100%);
+            position: relative;
+        }
+
+        #about::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(180deg, #a855f7 0%, transparent 100%);
+            opacity: 0.1;
+        }
+
+        .about-container h1 {
+            color: #6f42c1;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .about-container h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6f42c1, #a855f7);
+            animation: growLine 1s ease-out 0.5s forwards;
+        }
+
+        @keyframes growLine {
+            to { width: 100px; }
+        }
+
+        /* Team Cards */
+        .card {
+            border: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(111, 66, 193, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(111, 66, 193, 0.2);
+        }
+
+        .card-body {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Team Cards - New Animation */
+        .team-card {
+            border: none;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            transform: perspective(1000px) rotateY(0deg);
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(111, 66, 193, 0.1), transparent);
+            transform: rotate(0deg);
+            transition: transform 0.8s ease;
+            z-index: 1;
+        }
+
+        .team-card:hover::before {
+            transform: rotate(360deg);
+        }
+
+        .team-card:hover {
+            transform: perspective(1000px) rotateY(10deg) translateY(-15px) scale(1.05);
+            box-shadow: 
+                0 25px 50px rgba(111, 66, 193, 0.25),
+                0 0 0 1px rgba(111, 66, 193, 0.1);
+        }
+
+        .team-card .card-body {
+            position: relative;
+            z-index: 2;
+            transition: all 0.4s ease;
+        }
+
+        .team-card:hover .card-body {
+            transform: translateZ(30px);
+        }
+
+        .team-card .emoji-avatar {
+            font-size: 4rem;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: inline-block;
+            filter: drop-shadow(0 10px 20px rgba(111, 66, 193, 0.2));
+        }
+
+        .team-card:hover .emoji-avatar {
+            transform: scale(1.2) rotateY(360deg);
+            filter: drop-shadow(0 15px 30px rgba(111, 66, 193, 0.4));
+        }
+
+        .team-card .card-title {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .team-card .card-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #6f42c1, #a855f7);
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover .card-title::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        /* Team section entrance animation */
+        .team-entrance {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .team-entrance.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .team-entrance:nth-child(1) { transition-delay: 0.1s; }
+        .team-entrance:nth-child(2) { transition-delay: 0.2s; }
+        .team-entrance:nth-child(3) { transition-delay: 0.3s; }
+
+        /* Contact Section */
+        .contact-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(111, 66, 193, 0.1);
+            padding: 40px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(111, 66, 193, 0.05) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.6s ease;
+        }
+
+        .contact-card:hover::before {
+            transform: scale(1);
+        }
+
+        .contact-card h2, .contact-card h3 {
+            color: #6f42c1;
+            font-weight: 700;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-card .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideInLeft 0.6s ease-out forwards;
+        }
+
+        .contact-card .info-item:nth-child(2) { animation-delay: 0.1s; }
+        .contact-card .info-item:nth-child(3) { animation-delay: 0.2s; }
+        .contact-card .info-item:nth-child(4) { animation-delay: 0.3s; }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .contact-card .info-item i {
+            font-size: 1.5rem;
+            color: #6f42c1;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card .info-item:hover i {
+            transform: scale(1.2) rotate(5deg);
+            color: #a855f7;
+        }
+
+        /* Form Styles */
+        .form-control {
+            border: 2px solid rgba(111, 66, 193, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-control:focus {
+            border-color: #6f42c1;
+            box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        .form-label {
+            color: #6f42c1;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #6f42c1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(111, 66, 193, 0.4);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid #6f42c1;
+            color: #6f42c1;
+            border-radius: 12px;
+            padding: 8px 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: #6f42c1;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(111, 66, 193, 0.3);
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #6f42c1;
+            color: #6f42c1;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #6f42c1;
+            color: white;
+            transform: translateY(-3px) rotate(360deg);
+            box-shadow: 0 8px 20px rgba(111, 66, 193, 0.3);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #6f42c1 0%, #8b5cf6 100%);
+            color: white;
+            margin-top: 50px;
+        }
+
+        /* Utility Animations */
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .contact-card {
+                padding: 25px;
+                margin-bottom: 30px;
+            }
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #6f42c1, #a855f7);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a2d91, #8b5cf6);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="text-center">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Memuat Sistem Kepegawaian...</div>
+        </div>
     </div>
 
-    <div class="mb-5">
-      <h2>Apa itu Aplikasi SIKepegawaian?</h2>
-      <p>
-        SIKepegawaian adalah platform digital untuk mengintegrasikan seluruh data kepegawaian: dari informasi pribadi, absensi, hingga penggajian.
-      </p>
-      <h5>Tujuan Utama:</h5>
-      <ul>
-        <li>Meningkatkan efisiensi dan akurasi data pegawai.</li>
-        <li>Meminimalkan pekerjaan manual dan birokrasi.</li>
-        <li>Memudahkan akses informasi bagi pegawai dan pimpinan.</li>
-        <li>Mendukung pengambilan keputusan berbasis data.</li>
-      </ul>
-    </div>
-
-    <div class="mb-5">
-      <h2>Fitur Utama</h2>
-      <ul>
-        <li><strong>Manajemen Data Pegawai:</strong> Penyimpanan informasi lengkap pegawai.</li>
-        <li><strong>Absensi:</strong> Catatan kehadiran, cuti, izin, dan sakit.</li>
-        <li><strong>Penggajian:</strong> Otomatisasi perhitungan gaji dan slip.</li>
-        <li><strong>Manajemen Cuti:</strong> Pengajuan dan persetujuan online.</li>
-        <li><strong>Penilaian Kinerja:</strong> Rekam hasil evaluasi kinerja dan pelatihan.</li>
-        <li><strong>Self-Service:</strong> Pegawai dapat memperbarui data dan melihat slip gaji mereka sendiri.</li>
-      </ul>
-    </div>
-
-    <div class="mb-5 text-center">
-      <h2>Tim Pengembang</h2>
-      <div class="row">
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div style="font-size: 4rem;">👨‍💻</div>
-              <h5 class="card-title mt-3">Aldi Hidayat Daulay</h5>
-              <p class="card-text text-muted">CEO & Lead Developer</p>
-              <p class="card-text">Bertanggung jawab atas arsitektur sistem dan pengembangan inti aplikasi SIKepegawaian.</p>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#" style="color: #6f42c1;">
+                <i class="fas fa-users me-2"></i>Sistem Kepegawaian
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">Tentang</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Kontak</a>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-outline-primary me-2" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary" href="/register">Register</a>
+                    </li>
+                </ul>
             </div>
-          </div>
         </div>
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div style="font-size: 4rem;">👨‍💼</div>
-              <h5 class="card-title mt-3">Mulia</h5>
-              <p class="card-text text-muted">Manajer Proyek</p>
-              <p class="card-text">Mengelola alur kerja tim dan memastikan pengembangan sesuai jadwal dan standar.</p>
-            </div>
-          </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container px-4 hero-content">
+            <h1 class="display-4 fw-bold text-white">Selamat Datang di Sistem Kepegawaian</h1>
+            <p class="bold text-white">Kelola data pegawai Anda dengan lebih mudah dan efisien</p>
         </div>
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div style="font-size: 4rem;">👨‍🏫</div>
-              <h5 class="card-title mt-3">Ahmad Mabruri</h5>
-              <p class="card-text text-muted">Kepala Divisi SDM</p>
-              <p class="card-text">Memberikan insight kepegawaian untuk memastikan fitur sesuai dengan kebutuhan dunia nyata.</p>
-            </div>
-          </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down fa-2x"></i>
         </div>
-      </div>
-    </div>
+    </section>
 
-</section>
+    <!-- Tentang Section -->
+    <section id="about" class="py-5 bg-white fade-in-section" style="min-height: 100vh;">
+        <div class="container about-container">
+            <div class="mb-5 text-center">
+                <h1>Tentang Aplikasi Sistem Kepegawaian</h1>
+                <p class="mt-4">
+                    Selamat datang di Sistem Informasi Kepegawaian (Sistem Kepegawaian)! Aplikasi ini dirancang untuk mempermudah pengelolaan data dan administrasi sumber daya manusia di instansi atau perusahaan Anda.
+                </p>
+            </div>
 
-<!-- Kontak Section -->
-<section id="contact" class="py-5 bg-white">
-  <div class="container contact-container">
-    <div class="row justify-content-center">
-      <div class="col-lg-6 mb-4">
-        <div class="contact-card">
-          <h2>Kirim Pesan kepada Kami</h2>
-          <form action="#" method="POST">
-            <div class="mb-3">
-              <label for="name" class="form-label">Nama Lengkap</label>
-              <input type="text" class="form-control" id="name" name="name" required>
+            <div class="mb-5 fade-in-section">
+                <h2 style="color: #6f42c1;">Apa itu Aplikasi Sistem Kepegawaian?</h2>
+                <p>
+                    Sistem Kepegawaian adalah platform digital untuk mengintegrasikan seluruh data kepegawaian: dari informasi pribadi, absensi, hingga penggajian.
+                </p>
+                <h5 style="color: #6f42c1;">Tujuan Utama:</h5>
+                <ul>
+                    <li>Meningkatkan efisiensi dan akurasi data pegawai.</li>
+                    <li>Meminimalkan pekerjaan manual dan birokrasi.</li>
+                    <li>Memudahkan akses informasi bagi pegawai dan pimpinan.</li>
+                    <li>Mendukung pengambilan keputusan berbasis data.</li>
+                </ul>
             </div>
-            <div class="mb-3">
-              <label for="email" class="form-label">Alamat Email</label>
-              <input type="email" class="form-control" id="email" name="email" required>
+
+            <div class="mb-5 fade-in-section">
+                <h2 style="color: #6f42c1;">Fitur Utama</h2>
+                <ul>
+                    <li><strong>Manajemen Data Pegawai:</strong> Penyimpanan informasi lengkap pegawai.</li>
+                    <li><strong>Absensi:</strong> Catatan kehadiran, cuti, izin, dan sakit.</li>
+                    <li><strong>Penggajian:</strong> Otomatisasi perhitungan gaji dan slip.</li>
+                    <li><strong>Manajemen Cuti:</strong> Pengajuan dan persetujuan online.</li>
+                    <li><strong>Penilaian Kinerja:</strong> Rekam hasil evaluasi kinerja dan pelatihan.</li>
+                    <li><strong>Self-Service:</strong> Pegawai dapat memperbarui data dan melihat slip gaji mereka sendiri.</li>
+                </ul>
             </div>
-            <div class="mb-3">
-              <label for="subject" class="form-label">Subjek</label>
-              <input type="text" class="form-control" id="subject" name="subject">
+
+            <div class="mb-5 text-center fade-in-section">
+                <h2 style="color: #6f42c1;">Tim Pengembang</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4 team-entrance">
+                        <div class="card h-100 shadow-sm team-card">
+                            <div class="card-body text-center">
+                                <img src="/static/aldi.jpg" alt="Foto Mulia" class="team-avatar"> 
+                                <h5 class="card-title mt-3" style="color: #6f42c1;">Aldi Hidayat Daulay</h5>
+                                <p class="card-text text-muted">CEO & Lead Developer</p>
+                                <p class="card-text">Bertanggung jawab atas arsitektur sistem dan pengembangan inti aplikasi SIKepegawaian.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4 team-entrance">
+                        <div class="card h-100 shadow-sm team-card">
+                            <div class="card-body text-center">
+                                {# Ubah div.emoji-avatar menjadi img tag #}
+                                <img src="/static/mulia.jpg" alt="Foto Mulia" class="team-avatar"> {# Ganti path/to/mulia-avatar.jpg dengan URL foto asli #}
+                                <h5 class="card-title mt-3" style="color: #6f42c1;">Mulia</h5>
+                                <p class="card-text text-muted">Manajer Proyek</p>
+                                <p class="card-text">Mengelola alur kerja tim dan memastikan pengembangan sesuai jadwal dan standar.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4 team-entrance">
+                        <div class="card h-100 shadow-sm team-card">
+                            <div class="card-body text-center">
+                                <img src="/static/med.jpg" alt="Foto Mulia" class="team-avatar"> 
+                                <h5 class="card-title mt-3" style="color: #6f42c1;">Ahmad Mabruri</h5>
+                                <p class="card-text text-muted">Manajer UI  </p>
+                                <p class="card-text">Memberikan insight kepegawaian untuk memastikan fitur sesuai dengan kebutuhan dunia nyata.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-              <label for="message" class="form-label">Pesan Anda</label>
-              <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Kirim Pesan</button>
-          </form>
         </div>
-      </div>
+    </section>
 
-      <div class="col-lg-6 mb-4">
-        <div class="contact-card">
-          <h2>Informasi Kontak</h2>
-          <div class="info-item"><i class="fas fa-envelope"></i> <span>Email: support@sikepeg.com</span></div>
-          <div class="info-item"><i class="fas fa-phone-alt"></i> <span>Telepon: +62 812-3456-789</span></div>
-          <div class="info-item"><i class="fas fa-map-marker-alt"></i> <span>Alamat: [Alamat Kantor Anda]</span></div>
+    <!-- Kontak Section -->
+    <section id="contact" class="py-5 bg-light fade-in-section">
+        <div class="container contact-container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 mb-4">
+                    <div class="contact-card hover-lift">
+                        <h2>Kirim Pesan kepada Kami</h2>
+                        <form action="#" method="POST">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nama Lengkap</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Alamat Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subjek</label>
+                                <input type="text" class="form-control" id="subject" name="subject">
+                            </div>
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Pesan Anda</label>
+                                <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-paper-plane me-2"></i>Kirim Pesan
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
-          <h3 class="mt-4">Ikuti Kami</h3>
-          <div class="d-flex">
-            <a href="#" class="btn btn-outline-secondary me-2 rounded-circle"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="btn btn-outline-secondary me-2 rounded-circle"><i class="fas fa-twitter"></i></a>
-            <a href="#" class="btn btn-outline-secondary me-2 rounded-circle"><i class="fab fa-linkedin-in"></i></a>
+                <div class="col-lg-6 mb-4">
+                    <div class="contact-card hover-lift">
+                        <h2>Informasi Kontak</h2>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>Email: support@sikepeg.com</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone-alt"></i>
+                            <span>Telepon: +62 812-3456-789</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Alamat: Medan, Sumatera Utara</span>
+                        </div>
+
+                        <h3 class="mt-4">Ikuti Kami</h3>
+                        <div class="d-flex">
+                            <a href="#" class="btn btn-outline-secondary me-2">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-secondary me-2">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-secondary me-2">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-5 fade-in-section mt-5">
+                <h2 style="color: #6f42c1;">Kontak & Dukungan</h2>
+                <p class="mt-3">
+                    <i class="fas fa-envelope me-2" style="color: #6f42c1;"></i> 
+                    Email: <a href="mailto:support@sikepeg.com" style="color: #6f42c1;">support@sikepeg.com</a><br>
+                    <i class="fas fa-phone me-2" style="color: #6f42c1;"></i> 
+                    Telepon: <a href="tel:+628123456789" style="color: #6f42c1;">+62 812-3456-789</a><br>
+                    <i class="fas fa-globe me-2" style="color: #6f42c1;"></i> 
+                    Website: <a href="https://sikepeg.com" target="_blank" style="color: #6f42c1;">https://sikepeg.com</a>
+                </p>
+            </div>
         </div>
-    </div>
-</div>
-</div>
-</div>
-<div class="text-center mb-5">
-  <h2>Kontak & Dukungan</h2>
-  <p>
-    <i class="fas fa-envelope me-2"></i> Email: <a href="mailto:support@sikepeg.com">support@sikepeg.com</a><br>
-    <i class="fas fa-phone me-2"></i> Telepon: <a href="tel:+628123456789">+62 812-3456-789</a><br>
-    <i class="fas fa-globe me-2"></i> Website: <a href="https://sikepeg.com" target="_blank">https://sikepeg.com</a>
-  </p>
-</div>
-</div>
-</section>
+    </section>
 
-<!-- Footer -->
-<footer class="text-center py-4">
-  <p>Versi Aplikasi: <strong>1.0.0 Stable</strong></p>
-  <p>&copy; 2025 SIKepegawaian Team. Semua hak dilindungi undang-undang. Lisensi: Proprietary</p>
-</footer>
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <div class="container">
+            <p class="mb-2">Versi Aplikasi: <strong>1.0.0 Stable</strong></p>
+            <p class="mb-0">&copy; 2025 Sistem Kepegawaian Team. Semua hak dilindungi undang-undang. Lisensi: Proprietary</p>
+        </div>
+    </footer>
 
-<!-- CSS Custom -->
-<style>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 
-.hero {
-  position: relative;
-  background-image: url('/static/bg.jpg');
-  background-size: cover;
-  background-position: center;
-  height: 100vh;
-  padding: 20px;
-  z-index: 1;
-  overflow: hidden;
-}
+    <script>
+        // Loading Screen
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('fade-out');
+            }, 1500);
+        });
 
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-.contact-card {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-  padding: 30px;
-  height: 100%;
-}
-.contact-card h2, .contact-card h3 {
-  color: #6F42C1;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
-.contact-card .info-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-.contact-card .info-item i {
-  font-size: 1.5rem;
-  color: #6F42C1;
-  margin-right: 10px;
-}
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
 
-</style>
+        // Observe all fade-in sections
+        document.querySelectorAll('.fade-in-section').forEach(section => {
+            observer.observe(section);
+        });
 
-{% endblock %}
+        // Team entrance animation observer
+        const teamObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.team-entrance').forEach(element => {
+            teamObserver.observe(element);
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission with animation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const button = this.querySelector('button[type="submit"]');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Mengirim...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check me-2"></i>Terkirim!';
+                button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.style.background = '';
+                    this.reset();
+                }, 2000);
+            }, 1500);
+        });
+
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Navbar background change on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                navbar.style.boxShadow = '0 2px 20px rgba(111, 66, 193, 0.15)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = '0 2px 20px rgba(111, 66, 193, 0.1)';
+            }
+        });
+
+        // Add typing effect to hero title
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+            element.style.opacity = '1';
+            
+            function typing() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typing, speed);
+                }
+            }
+            typing();
+        }
+
+        // Initialize typing effect after loading
+        setTimeout(() => {
+            const heroTitle = document.querySelector('.hero h1');
+            if (heroTitle) {
+                const originalText = heroTitle.textContent;
+                typeWriter(heroTitle, originalText, 80);
+            }
+        }, 2000);
+
+        // Add ripple effect to buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                    background: rgba(255, 255, 255, 0.5);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                    pointer-events: none;
+                `;
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Counter animation for stats (if needed in future)
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            
+            function updateCounter() {
+                start += increment;
+                if (start < target) {
+                    element.textContent = Math.floor(start);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target;
+                }
+            }
+            updateCounter();
+        }
+
+        // Add mouse trail effect
+        let mouseTrail = [];
+        const maxTrailLength = 10;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseTrail.push({ x: e.clientX, y: e.clientY });
+            
+            if (mouseTrail.length > maxTrailLength) {
+                mouseTrail.shift();
+            }
+            
+            // Create trail elements
+            mouseTrail.forEach((point, index) => {
+                const trail = document.createElement('div');
+                trail.style.cssText = `
+                    position: fixed;
+                    pointer-events: none;
+                    width: ${4 - (index * 0.3)}px;
+                    height: ${4 - (index * 0.3)}px;
+                    background: rgba(111, 66, 193, ${0.8 - (index * 0.08)});
+                    border-radius: 50%;
+                    left: ${point.x}px;
+                    top: ${point.y}px;
+                    transform: translate(-50%, -50%);
+                    z-index: 9998;
+                    animation: fadeTrail 0.5s ease-out forwards;
+                `;
+                
+                document.body.appendChild(trail);
+                
+                setTimeout(() => {
+                    trail.remove();
+                }, 500);
+            });
+        });
+
+        // Add fade trail animation
+        const trailStyle = document.createElement('style');
+        trailStyle.textContent = `
+            @keyframes fadeTrail {
+                0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+            }
+        `;
+        document.head.appendChild(trailStyle);
+
+        // Add text reveal animation
+        function revealText(element) {
+            const text = element.textContent;
+            element.innerHTML = '';
+            
+            text.split('').forEach((char, index) => {
+                const span = document.createElement('span');
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                span.style.cssText = `
+                    opacity: 0;
+                    transform: translateY(20px);
+                    display: inline-block;
+                    animation: revealChar 0.5s ease forwards;
+                    animation-delay: ${index * 0.03}s;
+                `;
+                element.appendChild(span);
+            });
+        }
+
+        // Add reveal character animation
+        const revealStyle = document.createElement('style');
+        revealStyle.textContent = `
+            @keyframes revealChar {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(revealStyle);
+
+        // Initialize text reveal for headers when they come into view
+        const textRevealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.classList.contains('revealed')) {
+                    revealText(entry.target);
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('h2, h3').forEach(heading => {
+            textRevealObserver.observe(heading);
+        });
+
+        // Add floating animation to team cards only
+        document.querySelectorAll('.team-card').forEach((card, index) => {
+            card.style.animation = `teamFloat 4s ease-in-out infinite`;
+            card.style.animationDelay = `${index * 0.8}s`;
+        });
+
+        // Add team card floating keyframes
+        const teamFloatStyle = document.createElement('style');
+        teamFloatStyle.textContent = `
+            @keyframes teamFloat {
+                0%, 100% { 
+                    transform: perspective(1000px) rotateY(0deg) translateY(0px); 
+                }
+                50% { 
+                    transform: perspective(1000px) rotateY(0deg) translateY(-10px); 
+                }
+            }
+        `;
+        document.head.appendChild(teamFloatStyle);
+
+        // Add custom cursor effect
+        const cursor = document.createElement('div');
+        cursor.style.cssText = `
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: rgba(111, 66, 193, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+        `;
+        document.body.appendChild(cursor);
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Change cursor on hover
+        document.querySelectorAll('a, button, .card').forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cursor.style.background = 'rgba(111, 66, 193, 0.5)';
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursor.style.background = 'rgba(111, 66, 193, 0.3)';
+            });
+        });
+
+        // Add page transition effect
+        let isTransitioning = false;
+        
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (isTransitioning) return;
+                
+                isTransitioning = true;
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    e.preventDefault();
+                    
+                    // Add transition overlay
+                    const overlay = document.createElement('div');
+                    overlay.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: linear-gradient(135deg, #6f42c1, #a855f7);
+                        z-index: 10000;
+                        opacity: 0;
+                        pointer-events: none;
+                        transition: opacity 0.3s ease;
+                    `;
+                    
+                    document.body.appendChild(overlay);
+                    
+                    setTimeout(() => {
+                        overlay.style.opacity = '0.8';
+                    }, 10);
+                    
+                    setTimeout(() => {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                        
+                        setTimeout(() => {
+                            overlay.style.opacity = '0';
+                            setTimeout(() => {
+                                overlay.remove();
+                                isTransitioning = false;
+                            }, 300);
+                        }, 300);
+                    }, 300);
+                }
+            });
+        });
+
+        console.log('🎉 SIKepegawaian berhasil dimuat dengan animasi lengkap!');
+    </script>
+</body>
+</html>
