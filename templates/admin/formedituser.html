@@ -1,27 +1,161 @@
-{%extends 'admin/layout.html'%}
-{%block content%}
-<div class="container ">
-    <h3 class="mb-4">Edit User</h3>
-    <form action="/admin/form-edit-user/{{user[0]}}" method="POST">
-      <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" name="username" value="{{user[1]}}" required>
-      </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">password</label>
-        <input type="text" class="form-control" id="password" name="password" value="{{user[2]}}" required>       
-      </div>
-      <div class="mb-3">
-  <label for="hak_akses" class="form-label">Hak Akses</label>
-  <select class="form-select" id="hak_akses" name="hak_akses" required>
-    <option value="{{user[3]}}" selected>{{user[3]}}</option>
-    <option value="admin">admin</option>
-    <option value="user">user</option>
-  </select>
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+<div class="container mt-4 mb-5"> {# Tambah margin-top dan margin-bottom #}
+    <div class="card shadow-lg border-0 form-card-custom"> {# Gunakan card, shadow-lg, border-0, dan class kustom #}
+        <div class="card-body p-4 p-md-5"> {# Padding yang lebih besar untuk body card #}
+            <div class="d-flex align-items-center mb-4">
+                <i class="fas fa-user-edit fa-2x me-3 text-primary-custom"></i> {# Ikon besar dengan warna primer #}
+                <h3 class="mb-0 text-primary-custom">Edit Data User</h3> {# Judul dengan warna kustom #}
+            </div>
+            <hr class="mb-4"> {# Garis pemisah #}
+
+            <form action="/admin/form-edit-user/{{ user[0] }}" method="POST">
+                <div class="mb-3">
+                    <label for="username" class="form-label custom-form-label">Username</label>
+                    <div class="input-group"> {# Gunakan input-group untuk ikon di dalam input #}
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" class="form-control custom-form-control" id="username" name="username" value="{{ user[1] }}" placeholder="Masukkan username" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label custom-form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        {# Perhatian: Menampilkan password asli (isi[2]) di sini tidak disarankan untuk keamanan. #}
+                        {# Pertimbangkan untuk: #}
+                        {# 1. Mengosongkan value dan meminta user mengisi ulang jika ingin mengubah. #}
+                        {# 2. Menampilkan teks placeholder seperti "Biarkan kosong jika tidak ingin mengubah password". #}
+                        {# Untuk saat ini, saya tetap menampilkan nilai dari user[2] sesuai kode Anda, tetapi dengan peringatan. #}
+                        <input type="text" class="form-control custom-form-control" id="password" name="password" value="{{ user[2] }}" placeholder="Biarkan kosong jika tidak ingin mengubah password" required> 
+                    </div>
+                </div>
+
+                <div class="mb-4"> {# Margin bawah lebih besar #}
+                    <label for="hak_akses" class="form-label custom-form-label">Hak Akses</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
+                        <select class="form-select custom-form-control" id="hak_akses" name="hak_akses" required>
+                            {# Opsi terpilih saat ini #}
+                            <option value="{{ user[3] }}" selected>{{ user[3] }}</option>
+                            {# Opsi lainnya, pastikan tidak ada duplikasi dengan yang terpilih #}
+                            {% set current_hak_akses = user[3] %}
+                            {% if current_hak_akses != 'admin' %}
+                                <option value="admin">Admin</option>
+                            {% endif %}
+                            {% if current_hak_akses != 'user' %}
+                                <option value="user">User</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end"> {# Untuk menempatkan tombol di kanan #}
+                    <button type="submit" class="btn btn-primary-custom btn-lg shadow-sm">
+                        <i class="fas fa-save me-2"></i> Perbarui User
+                    </button>
+                    <a href="/admin/admin-kelola-user" class="btn btn-outline-secondary-custom btn-lg shadow-sm">
+                        <i class="fas fa-times-circle me-2"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-           <button type="submit" class="btn btn-primary">Simpan</button>
-    </form>
-  </div>
-  
-{%endblock%}
+<style>
+    /* Mengambil warna primer dari CSS layout utama jika belum didefinisikan */
+    :root {
+        --bs-primary: #6f42c1;
+        --bs-primary-rgb: 111,66,193;
+    }
+
+    .text-primary-custom {
+        color: var(--bs-primary) !important;
+    }
+
+    .btn-primary-custom {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-custom:hover {
+        background-color: #5c37a6;
+        border-color: #5c37a6;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+    .btn-primary-custom:active {
+        background-color: #4b2d87 !important;
+        border-color: #4b2d87 !important;
+        transform: translateY(0);
+    }
+
+    .btn-outline-secondary-custom {
+        color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        background-color: transparent;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-secondary-custom:hover {
+        background-color: var(--bs-primary);
+        color: white;
+        border-color: var(--bs-primary);
+        transform: translateY(-2px);
+    }
+    .btn-outline-secondary-custom:active {
+        background-color: #5c37a6 !important;
+        color: white !important;
+        border-color: #5c37a6 !important;
+        transform: translateY(0);
+    }
+
+    /* Custom styles for the form card */
+    .form-card-custom {
+        border-radius: 15px; /* Sudut lebih membulat */
+        max-width: 700px; /* Lebar maksimal form */
+        margin: 0 auto; /* Tengah secara horizontal */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); /* Bayangan yang lebih kuat */
+    }
+
+    /* Custom styles for form labels */
+    .custom-form-label {
+        font-weight: 600; /* Lebih tebal */
+        color: #495057; /* Warna teks yang sedikit lebih gelap */
+        margin-bottom: 8px; /* Sedikit spasi di bawah label */
+    }
+
+    /* Custom styles for form controls (inputs, select, textarea) */
+    .custom-form-control {
+        border-radius: 8px; /* Sudut yang lebih halus */
+        padding: 0.75rem 1rem; /* Padding yang lebih baik */
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .custom-form-control:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25); /* Glow ungu saat fokus */
+    }
+
+    /* Input group styles */
+    .input-group-text {
+        background-color: #e9ecef; /* Warna latar belakang untuk ikon */
+        border: 1px solid #ced4da;
+        border-right: none; /* Hilangkan border kanan */
+        border-radius: 8px 0 0 8px; /* Hanya sudut kiri yang membulat */
+        color: #6c757d; /* Warna ikon */
+    }
+    .input-group .custom-form-control {
+        border-left: none; /* Hilangkan border kiri untuk input */
+        border-radius: 0 8px 8px 0; /* Hanya sudut kanan yang membulat */
+    }
+    /* Ketika select berada di input-group, pastikan border-radius sesuai */
+    .input-group select.custom-form-control {
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+    }
+
+</style>
+{% endblock %}

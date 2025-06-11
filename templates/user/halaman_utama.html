@@ -1,0 +1,189 @@
+{% extends 'user/layout.html' %}
+{% block isi %}
+
+<!-- Hero Section -->
+<section id="home" class="hero d-flex align-items-center justify-content-center text-center text-white">
+  <div class="container px-4">
+    <h1 class="display-4 fw-bold">Selamat Datang di Sistem Kepegawaian</h1>
+    <p class="lead">Kelola data pegawai Anda dengan lebih mudah dan efisien</p>
+  </div>
+</section>
+
+<!-- Tentang Section -->
+<section id="about" class=" py-5 bg-white" style="min-height: 100vh;">
+  <div class="container about-container">
+    <div class="mb-5 text-center">
+      <h1>Tentang Aplikasi SIKepegawaian</h1>
+      <p>
+        Selamat datang di Sistem Informasi Kepegawaian (SIKepegawaian)! Aplikasi ini dirancang untuk mempermudah pengelolaan data dan administrasi sumber daya manusia di instansi atau perusahaan Anda.
+      </p>
+    </div>
+
+    <div class="mb-5">
+      <h2>Apa itu Aplikasi SIKepegawaian?</h2>
+      <p>
+        SIKepegawaian adalah platform digital untuk mengintegrasikan seluruh data kepegawaian: dari informasi pribadi, absensi, hingga penggajian.
+      </p>
+      <h5>Tujuan Utama:</h5>
+      <ul>
+        <li>Meningkatkan efisiensi dan akurasi data pegawai.</li>
+        <li>Meminimalkan pekerjaan manual dan birokrasi.</li>
+        <li>Memudahkan akses informasi bagi pegawai dan pimpinan.</li>
+        <li>Mendukung pengambilan keputusan berbasis data.</li>
+      </ul>
+    </div>
+
+    <div class="mb-5">
+      <h2>Fitur Utama</h2>
+      <ul>
+        <li><strong>Manajemen Data Pegawai:</strong> Penyimpanan informasi lengkap pegawai.</li>
+        <li><strong>Absensi:</strong> Catatan kehadiran, cuti, izin, dan sakit.</li>
+        <li><strong>Penggajian:</strong> Otomatisasi perhitungan gaji dan slip.</li>
+        <li><strong>Manajemen Cuti:</strong> Pengajuan dan persetujuan online.</li>
+        <li><strong>Penilaian Kinerja:</strong> Rekam hasil evaluasi kinerja dan pelatihan.</li>
+        <li><strong>Self-Service:</strong> Pegawai dapat memperbarui data dan melihat slip gaji mereka sendiri.</li>
+      </ul>
+    </div>
+
+    <div class="mb-5 text-center">
+      <h2>Tim Pengembang</h2>
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div style="font-size: 4rem;">👨‍💻</div>
+              <h5 class="card-title mt-3">Aldi Hidayat Daulay</h5>
+              <p class="card-text text-muted">CEO & Lead Developer</p>
+              <p class="card-text">Bertanggung jawab atas arsitektur sistem dan pengembangan inti aplikasi SIKepegawaian.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div style="font-size: 4rem;">👨‍💼</div>
+              <h5 class="card-title mt-3">Mulia</h5>
+              <p class="card-text text-muted">Manajer Proyek</p>
+              <p class="card-text">Mengelola alur kerja tim dan memastikan pengembangan sesuai jadwal dan standar.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div style="font-size: 4rem;">👨‍🏫</div>
+              <h5 class="card-title mt-3">Ahmad Mabruri</h5>
+              <p class="card-text text-muted">Kepala Divisi SDM</p>
+              <p class="card-text">Memberikan insight kepegawaian untuk memastikan fitur sesuai dengan kebutuhan dunia nyata.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</section>
+
+<!-- Kontak Section -->
+<section id="contact" class="py-5 bg-white">
+  <div class="container contact-container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 mb-4">
+        <div class="contact-card">
+          <h2>Kirim Pesan kepada Kami</h2>
+          <form action="#" method="POST">
+            <div class="mb-3">
+              <label for="name" class="form-label">Nama Lengkap</label>
+              <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Alamat Email</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="subject" class="form-label">Subjek</label>
+              <input type="text" class="form-control" id="subject" name="subject">
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">Pesan Anda</label>
+              <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Kirim Pesan</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="contact-card">
+          <h2>Informasi Kontak</h2>
+          <div class="info-item"><i class="fas fa-envelope"></i> <span>Email: support@sikepeg.com</span></div>
+          <div class="info-item"><i class="fas fa-phone-alt"></i> <span>Telepon: +62 812-3456-789</span></div>
+          <div class="info-item"><i class="fas fa-map-marker-alt"></i> <span>Alamat: [Alamat Kantor Anda]</span></div>
+
+          <h3 class="mt-4">Ikuti Kami</h3>
+          <div class="d-flex">
+            <a href="#" class="btn btn-outline-secondary me-2 rounded-circle"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="btn btn-outline-secondary me-2 rounded-circle"><i class="fas fa-twitter"></i></a>
+            <a href="#" class="btn btn-outline-secondary me-2 rounded-circle"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<div class="text-center mb-5">
+  <h2>Kontak & Dukungan</h2>
+  <p>
+    <i class="fas fa-envelope me-2"></i> Email: <a href="mailto:support@sikepeg.com">support@sikepeg.com</a><br>
+    <i class="fas fa-phone me-2"></i> Telepon: <a href="tel:+628123456789">+62 812-3456-789</a><br>
+    <i class="fas fa-globe me-2"></i> Website: <a href="https://sikepeg.com" target="_blank">https://sikepeg.com</a>
+  </p>
+</div>
+</div>
+</section>
+
+<!-- Footer -->
+<footer class="text-center py-4">
+  <p>Versi Aplikasi: <strong>1.0.0 Stable</strong></p>
+  <p>&copy; 2025 SIKepegawaian Team. Semua hak dilindungi undang-undang. Lisensi: Proprietary</p>
+</footer>
+
+<!-- CSS Custom -->
+<style>
+
+.hero {
+  position: relative;
+  background-image: url('/static/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  padding: 20px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+
+.contact-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  padding: 30px;
+  height: 100%;
+}
+.contact-card h2, .contact-card h3 {
+  color: #6F42C1;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.contact-card .info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.contact-card .info-item i {
+  font-size: 1.5rem;
+  color: #6F42C1;
+  margin-right: 10px;
+}
+
+</style>
+
+{% endblock %}

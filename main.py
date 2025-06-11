@@ -28,7 +28,7 @@ db_config = {
 
 @app.route('/')
 def index():
-    return render_template('user/index.html')
+    return render_template('user/halaman_utama.html')
 
 def get_db_connection():
     conn = mysql.connector.connect(**db_config)
@@ -93,6 +93,45 @@ def register():
             return redirect('/login')
 
     return render_template('register.html')
+
+@app.route('/lupa-password', methods=['GET', 'POST'])
+def lupa_password():
+    if request.method == 'POST':
+        username = request.form['username']
+        try:
+            cursor = db.get_db().cursor()
+            cursor.execute("SELECT * FROM user WHERE username=%s", (username,))
+            user = cursor.fetchone()
+
+            if user:
+                user_id = user[0]  # Ambil ID user
+                return redirect(f'/reset-password/{user_id}')
+            else:
+                flash("Username tidak ditemukan.", "danger")
+        except Exception as e:
+            flash(f'Terjadi kesalahan: {e}', 'danger')
+    
+    return render_template('lupa_password.html')
+
+@app.route('/reset-password/<id>', methods=['GET', 'POST'])
+def reset_password(id):
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        if new_password != confirm_password:
+            flash("Password dan konfirmasi password tidak cocok!", "danger")
+            return redirect('/reset-password/<id>')
+
+        try:
+            cursor = db.get_db().cursor()
+            cursor.execute("UPDATE user SET password=%s WHERE id=%s", (new_password, id))
+            db.get_db().commit()
+            flash("Password berhasil diubah. Silakan login kembali.", "success")
+            return redirect('/login')
+        except Exception as e:
+            flash(f'Gagal memperbarui password: {e}', 'danger')
+
+    return render_template('reset_password.html', id=id)
 
 @app.route('/tentang')
 def tentang():
@@ -254,7 +293,7 @@ def hapus_user(id):
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    return redirect('/login')
+    return redirect('/')
 
 
 

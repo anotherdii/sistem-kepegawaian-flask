@@ -1,40 +1,172 @@
-{%extends 'admin/layout.html'%}
-{%block content%}
-<div class="container ">
-    <h3 class="mb-4">Edit Pegawai</h3>
-    <form action="/admin/form-edit-barang/{{barang[0]}}" method="POST">
-      <div class="mb-3">
-        <label for="nama" class="form-label">Nama Pegawai</label>
-        <input type="text" class="form-control" id="nama" name="nama" value="{{barang[1]}}" required>
-      </div>
-      <div class="mb-3">
-        <label for="nip" class="form-label">NIP</label>
-        <input type="number" class="form-control" id="nip" name="nip" value="{{barang[2]}}" required>
-      </div>
-      <div class="mb-3">
-        <label for="jabatan" class="form-label">Jabatan</label>
-        <input type="text"class="form-control" id="jabatan" name="jabatan" value="{{barang[3]}}" required>
-      </div>
-      <div class="mb-3">
-        <label for="unit_kerja" class="form-label">Unit Kerja</label>
-        <select class="form-select" id="unit_kerja" name="unit_kerja" required>
-          <option value="{{barang[4]}}">{{barang[4]}}</option>
-          <option value="Keuangan">Keuangan</option>
-          <option value="Pemasaran">Pemasaran</option>
-          <option value=" SDM">SDM</option>
-          <option value="Logistik "> Logistik</option>
-          <option value="Lainnya">Lainnya</option>
-        </select>
-      </div>
-      <div class="mb-3">
-        <label for="alamat" class="form-label">Alamat</label>
-        <textarea class="form-control" id="alamat" name="alamat" rows="3">
-          {{barang[5]}}
 
-        </textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">Simpan</button>
-    </form>
-  </div>
-  
-{%endblock%}
+{% extends 'admin/layout.html' %}
+
+{% block content %}
+<div class="container mt-4 mb-5"> {# Tambah margin-top dan margin-bottom #}
+    <div class="card shadow-lg border-0 form-card-custom"> {# Gunakan card, shadow-lg, border-0, dan class kustom #}
+        <div class="card-body p-4 p-md-5"> {# Padding yang lebih besar untuk body card #}
+            <div class="d-flex align-items-center mb-4">
+                <i class="fas fa-user-edit fa-2x me-3 text-primary-custom"></i> {# Ikon besar dengan warna primer #}
+                <h3 class="mb-0 text-primary-custom">Edit Data Pegawai</h3> {# Judul dengan warna kustom #}
+            </div>
+            <hr class="mb-4"> {# Garis pemisah #}
+
+            <form action="/admin/form-edit-barang/{{ barang[0] }}" method="POST">
+                <div class="mb-3">
+                    <label for="nama" class="form-label custom-form-label">Nama Pegawai</label>
+                    <div class="input-group"> {# Gunakan input-group untuk ikon di dalam input #}
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" class="form-control custom-form-control" id="nama" name="nama" value="{{ barang[1] }}" placeholder="Masukkan nama lengkap pegawai" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="nip" class="form-label custom-form-label">NIP</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                        <input type="number" class="form-control custom-form-control" id="nip" name="nip" value="{{ barang[2] }}" placeholder="Masukkan NIP pegawai" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="jabatan" class="form-label custom-form-label">Jabatan</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                        <input type="text" class="form-control custom-form-control" id="jabatan" name="jabatan" value="{{ barang[3] }}" placeholder="Masukkan jabatan pegawai" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="unit_kerja" class="form-label custom-form-label">Unit Kerja</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-building"></i></span>
+                        <select class="form-select custom-form-control" id="unit_kerja" name="unit_kerja" required>
+                            {# Opsi terpilih saat ini #}
+                            <option value="{{ barang[4] }}" selected>{{ barang[4] }}</option>
+                            {# Opsi lainnya, pastikan tidak ada duplikasi dengan yang terpilih #}
+                            {% set current_unit_kerja = barang[4] %}
+                            {% for option in ["Keuangan", "Pemasaran", "SDM", "Logistik", "Operasional", "IT", "Lainnya"] %}
+                                {% if option != current_unit_kerja %}
+                                    <option value="{{ option }}">{{ option }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4"> {# Margin bawah lebih besar #}
+                    <label for="alamat" class="form-label custom-form-label">Alamat</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                        <textarea class="form-control custom-form-control" id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap pegawai">{{ barang[5] }}</textarea>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end"> {# Untuk menempatkan tombol di kanan #}
+                    <button type="submit" class="btn btn-primary-custom btn-lg shadow-sm">
+                        <i class="fas fa-save me-2"></i> Perbarui Data
+                    </button>
+                    <a href="/admin/admin-kelola-barang" class="btn btn-outline-secondary-custom btn-lg shadow-sm">
+                        <i class="fas fa-times-circle me-2"></i> Batal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Mengambil warna primer dari CSS layout utama jika belum didefinisikan */
+    :root {
+        --bs-primary: #6f42c1;
+        --bs-primary-rgb: 111,66,193;
+    }
+
+    .text-primary-custom {
+        color: var(--bs-primary) !important;
+    }
+
+    .btn-primary-custom {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-custom:hover {
+        background-color: #5c37a6;
+        border-color: #5c37a6;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+    .btn-primary-custom:active {
+        background-color: #4b2d87 !important;
+        border-color: #4b2d87 !important;
+        transform: translateY(0);
+    }
+
+    .btn-outline-secondary-custom {
+        color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        background-color: transparent;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-secondary-custom:hover {
+        background-color: var(--bs-primary);
+        color: white;
+        border-color: var(--bs-primary);
+        transform: translateY(-2px);
+    }
+    .btn-outline-secondary-custom:active {
+        background-color: #5c37a6 !important;
+        color: white !important;
+        border-color: #5c37a6 !important;
+        transform: translateY(0);
+    }
+
+    /* Custom styles for the form card */
+    .form-card-custom {
+        border-radius: 15px; /* Sudut lebih membulat */
+        max-width: 700px; /* Lebar maksimal form */
+        margin: 0 auto; /* Tengah secara horizontal */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12); /* Bayangan yang lebih kuat */
+    }
+
+    /* Custom styles for form labels */
+    .custom-form-label {
+        font-weight: 600; /* Lebih tebal */
+        color: #495057; /* Warna teks yang sedikit lebih gelap */
+        margin-bottom: 8px; /* Sedikit spasi di bawah label */
+    }
+
+    /* Custom styles for form controls (inputs, select, textarea) */
+    .custom-form-control {
+        border-radius: 8px; /* Sudut yang lebih halus */
+        padding: 0.75rem 1rem; /* Padding yang lebih baik */
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .custom-form-control:focus {
+        border-color: var(--bs-primary);
+        box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25); /* Glow ungu saat fokus */
+    }
+
+    /* Input group styles */
+    .input-group-text {
+        background-color: #e9ecef; /* Warna latar belakang untuk ikon */
+        border: 1px solid #ced4da;
+        border-right: none; /* Hilangkan border kanan */
+        border-radius: 8px 0 0 8px; /* Hanya sudut kiri yang membulat */
+        color: #6c757d; /* Warna ikon */
+    }
+    .input-group .custom-form-control {
+        border-left: none; /* Hilangkan border kiri untuk input */
+        border-radius: 0 8px 8px 0; /* Hanya sudut kanan yang membulat */
+    }
+    /* Ketika select berada di input-group, pastikan border-radius sesuai */
+    .input-group select.custom-form-control {
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+    }
+
+</style>
+{% endblock %}
