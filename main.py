@@ -174,8 +174,8 @@ def home():
         dashboard_data['laporan_terbaru'] = cursor.fetchall()
         
         # Tambahan: Jumlah Pengguna (jika ada tabel 'users' dan ingin menampilkan)
-        cursor.execute("SELECT COUNT(id) AS total_users FROM laporan")
-        dashboard_data['total_users'] = cursor.fetchone()['total_users']
+        cursor.execute("SELECT COUNT(id) AS total_user FROM user")
+        dashboard_data['total_user'] = cursor.fetchone()['total_user']
 
 
     except mysql.connector.Error as err:
@@ -622,12 +622,16 @@ def admin_bantuan():
     # Data FAQ, email dukungan, dan fitur (bisa diperluas)
     faq_items = [
         {
-            'question': 'Bagaimana cara menambahkan laporan kinerja baru?',
-            'answer': 'Anda dapat menambahkan laporan kinerja melalui halaman "Kelola Laporan" lalu klik tombol "Tambah Laporan Baru". Isi formulir yang tersedia dan simpan.'
+            'question': 'Bagaimana cara menambahkan user baru?',
+            'answer': 'Anda dapat menambahkan user melalui halaman "Kelola User" lalu klik tombol "Tambah User ". Isi formulir yang tersedia dan simpan.'
+        },
+        {
+            'question': 'Bagaimana cara menambahkan pegawai baru?',
+            'answer': 'Anda dapat menambahkan pegawai melalui halaman "Kelola Pegawai" lalu klik tombol "Tambah Pegawai ". Isi formulir yang tersedia dan simpan.'
         },
         {
             'question': 'Bagaimana cara mengubah status laporan?',
-            'answer': 'Pada halaman "Kelola Laporan", Anda bisa langsung mengubah status "Terkirim" menjadi "Sukses" melalui dropdown di kolom Status.'
+            'answer': 'Pada halaman " Laporan", Anda bisa langsung mengubah status "Terkirim" menjadi "Sukses" melalui dropdown di kolom Status.'
         },
         {
             'question': 'Apa yang terjadi jika saya menghapus laporan?',
@@ -635,7 +639,7 @@ def admin_bantuan():
         },
         {
             'question': 'Bagaimana cara memperbarui data laporan yang sudah ada?',
-            'answer': 'Pada halaman "Kelola Laporan", klik tombol "Edit" di samping laporan yang ingin diubah. Anda dapat mengedit judul, tanggal, dan status laporan.'
+            'answer': 'Pada halaman " Laporan", klik tombol "Edit" di samping laporan yang ingin diubah. Anda dapat mengedit judul, tanggal, dan status laporan.'
         },
         # Tambahkan lebih banyak FAQ di sini
     ]

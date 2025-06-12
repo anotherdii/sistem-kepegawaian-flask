@@ -46,13 +46,13 @@
             </div>
 
             {# Card Total Pengguna (Opsional) #}
-            {% if dashboard_data.total_users is defined %}
+            {% if dashboard_data.total_user is defined %}
             <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center justify-center text-center transition-transform transform hover:scale-105 duration-300 cursor-pointer border-t-4 border-purple-500">
                 <div class="p-3 rounded-full bg-purple-100 text-purple-600 mb-4">
                     <i class="fas fa-users fa-2x"></i>
                 </div>
                 <div class="text-purple-600 text-sm font-semibold uppercase tracking-wider mb-1">Total Pengguna</div>
-                <div class="text-5xl font-bold text-gray-900">{{ dashboard_data.total_users | default(0) }}</div>
+                <div class="text-5xl font-bold text-gray-900">{{ dashboard_data.total_user | default(0) }}</div>
             </div>
             {% endif %}
         </div>
